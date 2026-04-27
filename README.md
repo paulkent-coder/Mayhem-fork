@@ -1,3 +1,15 @@
+# Mayhem (GitHub mirror / fork)
+
+This repository is a mirror/fork of the original project hosted on Codeberg:
+👉 https://codeberg.org/BalatroMayhem/Mayhem/raw/branch/main/repoassets/banner2rounded.png
+
+I do not own the original project. This repo exists to:
+- track my contributions
+- experiment with changes
+- maintain a GitHub presence
+
+For official development and pull requests, see the upstream repository.
+
 ![Banner](https://codeberg.org/BalatroMayhem/Mayhem/raw/branch/main/repoassets/banner2rounded.png)
 # Mayhem
 Chaotic (and stupid) Balatro content mod that focuses on continuous fusions between Jokers. 

@@ -1,7 +1,7 @@
 {
-	"id": "mayhem",
-	"name": "Mayhem",
-	"display_name": "Mayhem",
+	"id": "mayhem-dev",
+	"name": "Mayhem-dev",
+	"display_name": "Mayhem-dev",
 	"author": ["alex343xd, full credits on repository"],
 	"description": "Fuse Jokers continuously and watch the game burn.",
 	"prefix": "may",
