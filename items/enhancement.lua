@@ -180,7 +180,7 @@ SMODS.Enhancement {
 	discovered = true,
 	atlas = 'enhancement',
 	calculate = function(self, card, context)
-		if context.end_of_round and context.cardarea == G.hand and context.other_card == card then
+		if context.playing_card_end_of_round and context.cardarea == G.hand then
 			return {
 				x_dollars = 1.1, 
                 card = card 
@@ -228,9 +228,11 @@ SMODS.Enhancement {
 		name = 'Crystal Card',
 		text = {
             {
-			    '{C:money}+#1#%{} of {C:money}total balance{} when scored {C:inactive}($#2#){}',
-			    '{C:mult}Decreases{} by {C:attention}2{} when {C:attention}triggered{}',
-			    '{C:attention}Increases{} by {C:attention}10{} if {C:attention}held in hand{} after scoring',
+			    'If {C:attention}held in hand{} at the end of round,',
+				'gives {C:attention}adjacent{} cards', 
+				'held in hand {C:money}+$2{}', 
+				'{C:attention}Adjacent{} {C:dark_edition}Crystal Cards{} get', 
+				'{C:green}double{} the bonus', 
             },
             {
                 '{C:inactive,E:1}Art by HuyCorn{}'
@@ -240,42 +242,31 @@ SMODS.Enhancement {
 	pos = { x = 5, y = 0 },
 	unlocked = true,
 	replace_base_card = false,
-	weight = .075,
+	weight = .1,
 	discovered = true,
     shatters = true,
-	loc_vars = function(self, info_queue, card)
-		return { vars = { card.ability.crystal_percent or 0, number_format((to_big(G.GAME.dollars) or to_big(0)):mul((card.ability.crystal_percent or 0) * 0.01)) } }
-	end, 
-	set_ability = function(self, card, initial, delay_sprites)
-		card.ability.crystal_percent = 5
-	end,
 	atlas = 'enhancement',
 	calculate = function(self, card, context)
-		if context.cardarea == G.play and context.main_scoring then
-			card.ability.crystal_percent = math.max(0, card.ability.crystal_percent - 2)
-			return {
-				message = 'Downgraded!',
-				colour = G.C.MONEY,
-				card = card, 
-				x_dollars = 1 + (card.ability.crystal_percent * 0.01)
-			}
-		end
-		if context.after and context.cardarea == G.hand then
-			card.ability.crystal_percent = card.ability.crystal_percent + 10
-			return {
-				message = 'Upgraded!',
-				colour = G.C.MONEY,
-				card = card
-			}
+		if context.playing_card_end_of_round and context.cardarea == G.hand then
+			local left, right
+			for k, v in ipairs(G.hand.cards) do
+				if v == card then
+					left = G.hand.cards[k - 1]
+					right = G.hand.cards[k + 1]
+					break
+				end
+			end
+			if left then
+				left.ability.perma_dollars = (left.ability.perma_dollars or 0) + 2 * (SMODS.has_enhancement(left, 'm_may_crystal') and 2 or 1)
+				card_eval_status_text(left, 'extra', nil, nil, nil, { message = 'Upgraded!', colour = G.C.MONEY, delay = 0.45, sound = 'may_permabonus' })
+			end
+			if right then
+				right.ability.perma_dollars = (right.ability.perma_dollars or 0) + 2 * (SMODS.has_enhancement(right, 'm_may_crystal') and 2 or 1)
+				card_eval_status_text(right, 'extra', nil, nil, nil, { message = 'Upgraded!', colour = G.C.MONEY, delay = 0.45, sound = 'may_permabonus' })
+			end
 		end
 	end
 }
-
-local vanf_dc = draw_card
-function draw_card(from, to, percent, dir, sort, card, delay, mute, stay_flipped, vol, discarded_only)
-	vanf_dc(from, to, percent, dir, sort, card, delay, mute, stay_flipped, vol, discarded_only)
-	SMODS.calculate_context({card_drawn = true, other_card = card, from = from, to = to})
-end
 
 SMODS.Enhancement {
 	key = 'cardboard',
@@ -426,7 +417,7 @@ SMODS.Enhancement {
 	calculate = function(self, card, context)
 		if context.cardarea == G.play and context.main_scoring then
 			return {
-				x_mult = math.sqrt(G.GAME.hands[context.scoring_name].mult) * 0.25
+				x_mult = math.sqrt(G.GAME.hands[context.scoring_name].level) * 0.25
 			}
 		end
 	end

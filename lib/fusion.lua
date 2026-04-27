@@ -131,22 +131,22 @@ function Card:may_fuse_card()
 			if chosen_fusion.shake then
 				G.ROOM.jiggle = G.ROOM.jiggle + chosen_fusion.shake
 			end
-			if may.conf.scaling ~= 4 then
+			if may.conf.fusion_punishment then
 				if j_fusion:gc().rarity == 'may_mythic' then
 					may.add_round_timer(10, 'mythic_fuse')
-					may.a('Mythic scaling will activate in 10 rounds!', '5', 0.5, G.C.RED, 'talisman_eeechip', 0.7, 1)
+					may.a('Mythic Scaling will activate in 10 rounds!', '5', 0.5, G.C.RED)
 				elseif j_fusion:gc().rarity == 'may_transcendent' then
 					may.add_round_timer(10, 'transcendent_fuse')
-					may.a('Transcendent scaling will activate in 10 rounds!', '5', 0.5, G.C.RED, 'talisman_eeechip', 0.7, 1)
+					may.a('Ethereal Scaling will activate in 10 rounds!', '5', 0.5, G.C.RED)
 				elseif j_fusion:gc().rarity == 'may_interdimensional' then
 					may.add_round_timer(10, 'interdimensional_fuse')
-					may.a('Interdimensional scaling will activate in 10 rounds!', '5', 0.5, G.C.RED, 'talisman_eeechip', 0.7, 1)
+					may.a('Prismatic Scaling will activate in 10 rounds!', '5', 0.5, G.C.RED)
 				elseif j_fusion:gc().rarity == 'may_ethereal' then
 					may.add_round_timer(6, 'ethereal_fuse')
-					may.a('Ethereal scaling will activate in 6 rounds!', '5', 0.5, G.C.RED, 'talisman_eeechip', 0.7, 1)
+					may.a('Demiurgic Scaling will activate in 6 rounds!', '5', 0.5, G.C.RED)
 				elseif j_fusion:gc().rarity == 'may_hyperascendant' then
 					may.add_round_timer(3, 'hyperascendant_fuse')
-					may.a('HyperAscendant scaling will activate in 3 rounds!', '5', 0.5, G.C.RED, 'talisman_eeechip', 0.7, 1)
+					may.a('Transcendent Scaling will activate in 3 rounds!', '5', 0.5, G.C.RED)
 				end
 			end
 			delay(0.1)
@@ -336,16 +336,16 @@ may.fusions.conditions.cosmos = 'Have a {C:purple}Poker Hand{} with at least {C:
 may.fusions.conditions.acum = 'At least {C:attention}11 Aces{} in full deck'
 may.fusions.conditions.storm = 'Used at least {C:attention}20{} {C:planet}Planet Cards{}'
 may.fusions.conditions.little_prince = 'Played at least {C:attention}1 Royal Flush{}'
-may.fusions.conditions.party_time = '{C:dark_edition}Interdimensional Scaling{} or above active'
+may.fusions.conditions.party_time = '{C:dark_edition}Prismatic Scaling{} or above active'
 may.fusions.conditions.diskus_kollectum = 'Holding at least {C:attention}70{} copies of {C:tarot}The Wheel of Fortune{}'
 may.fusions.conditions.bismuth_joker = '{C:mult}Destroyed{} at least {C:attention}50{} {C:dark_edition}Stone Cards{}'
-may.fusions.conditions.schematicum =  'Used at least {C:attention}20{} {C:spectral}Potents{} & {C:dark_edition}Transcendent Scaling{} or above active'
+-- may.fusions.conditions.schematicum =  'Used at least {C:attention}20{} {C:spectral}Potents{} & {C:dark_edition}Transcendent Scaling{} or above active'
 
 may.fusions.conditions.acum_universum = 'At least {C:attention}33 Aces{} in full deck' 
 may.fusions.conditions.kepler = 'Have a {C:purple}Poker Hand{} with at least {C:planet}level{} {C:attention}200{}'
 may.fusions.conditions.diskus_kollectum_maximus = 'Holding at least {C:attention}140{} copies of {C:tarot}The Wheel of Fortune{}'
 may.fusions.conditions.world_destroyer = 'Used at least {C:attention}50{} {C:planet}Planet Cards{}'
-may.fusions.conditions.aurora_rave = '{C:dark_edition}Ethereal Scaling{} or above active'
+may.fusions.conditions.aurora_rave = '{C:dark_edition}Demiurgic Scaling{} or above active'
 may.fusions.conditions.rocco_pfilosofia = '{C:mult}Destroyed{} at least {C:attention}120{} {C:dark_edition}Stone Cards{}'
 
 may.fusions.conditions.acum_multiplexum = 'At least {C:attention}77 Aces{} in full deck' 
@@ -402,7 +402,7 @@ may.fusions:add_fusion('j_may_granite_joker', nil, nil, 'j_marble', nil, nil, 'j
 	return false
 end)
  
-	-- Transcendent
+	-- Ethereal
 
 may.fusions:add_fusion('j_may_universal_collapse', nil, nil, 'j_may_hurley', nil, nil, 'j_may_ultimate_hurley', 1000, 'may_transcendent_joker', nil, 0, function()
 	local count = 0
@@ -460,11 +460,7 @@ may.fusions:add_fusion('j_may_bedrock_joker', nil, nil, 'j_stone', nil, nil, 'j_
 	return (G.GAME.may_stones_destroyed or 0) >= 50
 end)
 
-may.fusions:add_fusion('j_may_universal_collapse', nil, nil, 'j_blueprint', nil, nil, 'j_may_schematicum', 1500, 'may_transcendent_joker', nil, 0, function()
-	return may.cu('c_may_potent') > 20 and ((G.GAME.may_transcendent_scaling or 0) > 0 or (G.GAME.may_interdimensional_scaling or 0) > 0 or (G.GAME.may_ethereal_scaling or 0) > 0 or (G.GAME.may_surreal_scaling or 0) > 0 or (G.GAME.may_hyperascendant_scaling or 0) > 0) 
-end)
-
-	-- Interdimensional
+	-- Prismatic 
  
 may.fusions:add_fusion('j_may_universal_collapse', nil, nil, 'j_may_acum', nil, nil, 'j_may_acum_universum', 111111, 'may_interdimensional_joker', nil, 0.8, function()
 	local count = 0
@@ -508,7 +504,7 @@ may.fusions:add_fusion('j_may_bismuth_joker', nil, nil, 'j_may_cement_joker', ni
 	return (G.GAME.may_stones_destroyed or 0) >= 120
 end)
 
-	-- Ethereal
+	-- Demiurgic 
   
 may.fusions:add_fusion('j_may_universal_collapse', nil, nil, 'j_may_acum_universum', nil, nil, 'j_may_acum_multiplexum', 11111111, 'may_ethereal_joker', nil, 1, function()
 	local count = 0
@@ -558,7 +554,7 @@ may.fusions:add_fusion('j_may_rocco_pfilosofia', nil, nil, 'j_may_universal_coll
 	return (G.GAME.may_stones_destroyed or 0) >= 250
 end)
 
-	-- HyperAscendant
+	-- Transcendent 
 
 may.fusions:add_fusion('j_may_acum_multiplexum', nil, nil, 'j_may_keplers_dream', nil, nil, 'j_may_spadus', 11e110, 'may_hyperascendant_joker', nil, 1.5, function()
 	for k, v in pairs(G.GAME.hands) do

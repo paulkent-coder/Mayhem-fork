@@ -173,7 +173,7 @@ SMODS.Consumable {
         for k, v in pairs(G.hand.cards) do
             if v.ability.consumeable then 
                 table.insert(targets, v)
-                table.insert(consumables, G.P_CENTERS[v2].set)
+                table.insert(consumables, G.P_CENTERS[v].set)
             end
         end
         for k, v in pairs(targets) do
@@ -294,6 +294,7 @@ SMODS.Consumable {
 	discovered = true,
     no_grc = true, 
 	loc_vars = function(self, info_queue, card)
+		info_queue[#info_queue + 1] = { key = "e_negative_consumable", set = "Edition", config = { extra = 1 } }
 		info_queue[#info_queue + 1] = { key = "may_ccd_tutorial", set = "Other" }
 		return { vars = {} }
 	end,
@@ -1381,6 +1382,7 @@ SMODS.Consumable {
 	discovered = true,
     no_grc = true, 
 	loc_vars = function(self, info_queue, card)
+		info_queue[#info_queue + 1] = { key = "e_negative_consumable", set = "Edition", config = { extra = 1 } }
 		return { vars = { card.ability.extra.tarots } }
 	end,
 	can_use = function(self, card)
@@ -2586,12 +2588,13 @@ SMODS.Consumable {
 	key = 'black_hole_upsd',
 	set = 'upside_down_spectrals',
 	name = 'BlalB HooH',
+	config = { extra = { tags = 10 } },
 	loc_txt = {
 		name = "BlalB HooH",
 		text = {
 			{
 				"{C:mult}Levels down{} {C:attention}all Poker Hands{} by 1",
-				"Creates a copy of {C:dark_edition}Universal Collapse{}",
+				"Creates {C:attention}#1#{} random {C:attention}Tags",
 				"{C:inactive}Requires room{}",
 			},
 			{
@@ -2604,25 +2607,21 @@ SMODS.Consumable {
 	cost = 50,
 	unlocked = true,
 	discovered = true,
-	endless = true, 
     no_grc = true, 
     loc_vars = function(self, info_queue, card)
-        info_queue[#info_queue + 1] = G.P_CENTERS.j_may_universal_collapse
-        return {}
+        return { vars = { card.ability.extra.tags } }
     end, 
 	can_use = function(self, card)
-		return may.canuse() and #G.jokers.cards < G.jokers.config.card_limit
+		return may.canuse()
 	end,
 	use = function(self, card, area, copier)
 		may.level_up_all_hands(card, false, -1)
 		G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
-			local card2 = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_may_universal_collapse', 'may_genesis')
-			G.jokers:emplace(card2)
-			play_sound('may_thunder'..math.random(1,2)..'', 1, 0.75)
-			card2:add_to_deck()
+			play_sound('may_bundle')
+			card:may_explode(nil, nil, true)
+			for i = 1, card.ability.extra.tags do
+				may.random_tag()
+			end
 		return true end}))
 	end, 
-	in_pool = function(self, args)
-        return G.GAME.may_endless_mode, { allow_duplicates = false }
-    end
 }

@@ -69,7 +69,7 @@ SMODS.Consumable:take_ownership('c_ankh', {
             "{C:attention}Duplicate{} a {C:attention}random{}", 
             "{C:mult}non-{}{C:dark_edition}Fusion{} {C:attention}Joker{}", 
             "{C:mult}Destroy{} all {C:attention}other{} {C:mult}non-{}{C:dark_edition}Fusion{} {C:attention}Jokers{}", 
-            "{C:inactive}Surreal Jokers count as Fusion Jokers{}"
+            "{C:inactive}Opalescent Jokers count as Fusion Jokers{}"
         }
     }, 
     can_use = function(self, card)
@@ -113,7 +113,7 @@ SMODS.Joker:take_ownership('j_invisible', {
             "{C:money}sell{} {C:attention}this Joker{} to {C:green}duplicate{}",
             "another {C:attention}random{} {C:mult}non-{}{C:dark_edition}Fusion{} {C:attention}Joker{}", 
             "{C:inactive}(Currently {C:attention}#2#{C:inactive}/#1#){}", 
-            "{C:inactive}Surreal Jokers count as Fusion Jokers{}", 
+            "{C:inactive}Opalescent Jokers count as Fusion Jokers{}", 
 			"{C:inactive}Removes Negative Edition from copy{}"
         }
     }, 
@@ -178,20 +178,6 @@ SMODS.Consumable:take_ownership('c_black_hole', {
 })
 
 -- Add fusion notices to vanilla jokers
-SMODS.Joker:take_ownership('j_blueprint', {
-    loc_txt = {
-        name = "Blueprint", 
-        text = {
-            {
-                "Copies ability of", 
-				"{C:attention}Joker{} to the right{}",
-   		 }, 
-    		may.add_fusion_text('Universal Collapse', 'Schematicum', '{C:dark_edition}Transcendent Scaling{} active & used {C:attention}20{} {C:spectral}Potents{}')
-        }, 
-    },
-	no_tree = true,
-})
-
 SMODS.Joker:take_ownership('j_marble', {
     loc_txt = {
         name = "Marble Joker", 

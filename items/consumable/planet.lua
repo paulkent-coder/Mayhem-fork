@@ -2495,21 +2495,6 @@ SMODS.Consumable {
 			end
 		end
 	end,
-	--[[bulk_use = function(self, card, area, copier, number)
-		may.set_all_hand_levels(card, false, G.GAME.hands[may.favhand()].level * 3, may.favhand())
-		local card2 = create_card('Planet', G.consumeables, nil, nil, nil, nil, 'c_may_quac_n7', 'may_quac_n7')
-		card2:add_to_deck()
-		G.consumeables:emplace(card2)
-		card2:setQty(number - 1)
-		if Engulf and card.edition then 
-			for k, v in pairs(G.GAME.hands) do
-				if k ~= may.favhand() then 
-					Engulf.EditionHand(card, k, card.edition, 1, true)
-					may.ch()
-				end
-			end
-		end
-	end,]] 
 	in_pool = function(self, args)
 		return G.GAME.may_endless_mode, { allow_duplicates = false }
 	end
@@ -2567,17 +2552,6 @@ SMODS.Consumable {
 			may.ch()
 		end
 	end,
-	--[[bulk_use = function(self, card, area, copier, number)
-		may.set_hand_level(card, may.favhand(), false, may.get_all_ph_level(may.favhand()) * 5 )
-		local card2 = create_card('Planet', G.consumeables, nil, nil, nil, nil, 'c_may_opolisis', 'may_opolisis')
-		card2:add_to_deck()
-		G.consumeables:emplace(card2)
-		card2:setQty(number - 1)
-		if Engulf and card.edition then 
-			Engulf.EditionHand(card, may.favhand(), card.edition, 1)
-			may.ch()
-		end
-	end,]] 
 	in_pool = function(self, args)
 		return G.GAME.may_endless_mode, { allow_duplicates = false }
 	end
@@ -2645,39 +2619,6 @@ SMODS.Consumable {
 		end
 		may.ch()
 	end,
-	--[[bulk_use = function(self, card, area, copier, number)
-		local balanced
-		for i=1, number, 1 do
-			balanced = (G.GAME.hands[may.favhand()].level + G.GAME.hands[may.favhand()].l_mult + G.GAME.hands[may.favhand()].l_chips + G.GAME.hands[may.favhand()].mult + G.GAME.hands[may.favhand()].chips) / 5
-			 if Engulf and card.edition then 
-				Engulf.EditionHand(card, hand, card.edition, 1, true)
-			end 
-		end
-		may.th(may.favhand())
-		G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, func = function()
-			play_sound('may_eq_level')
-		return true end}))
-		may.hlv(balanced)
-		G.GAME.hands[may.favhand()].level = balanced
-		may.hand_mod_lvl_multchips(may.favhand(), 'mult', -1, balanced - G.GAME.hands[may.favhand()].l_mult)
-		may.hand_mod_lvl_multchips(may.favhand(), 'chips', -1, balanced - G.GAME.hands[may.favhand()].l_chips)
-		G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, func = function()
-			play_sound('may_eqchip')
-		return true end}))
-		may.hc('='..balanced, true)
-		G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, func = function()
-			play_sound('may_eqchip')
-		return true end}))
-		G.GAME.hands[may.favhand()].chips = balanced
-		may.hc('='..balanced, true)
-		G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, func = function()
-			play_sound('may_eqmult')
-		return true end}))
-		G.GAME.hands[may.favhand()].mult = balanced
-		may.hm('='..balanced, true)
-		delay(1.3) 
-		may.ch()
-	end,]]
 	in_pool = function(self, args)
 		return G.GAME.may_endless_mode, { allow_duplicates = false }
 	end

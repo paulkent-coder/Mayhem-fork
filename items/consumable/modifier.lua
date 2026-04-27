@@ -2881,6 +2881,578 @@ SMODS.Consumable {
 	end 
 }
 
+SMODS.Consumable {
+	key = 'amber_card',
+	config = { extra = { bonus1 = -2, bonus2 = 20, target = 'e_may_amber' } },
+	loc_txt = {
+		name = 'Amber Card',
+		text = {
+			{
+				"Each card with {C:dark_edition}Amber Edition{}", 
+				"{C:attention}held in hand{} gives", 
+				"{C:mult}-#1#{} Mult and {C:chips}+#2#{} Chips to {C:attention}all{}", 
+				"other {C:attention}playing cards{} in full deck", 
+				"{C:inactive}Currently{} {C:mult}-#3#{} {C:inactive}Mult and{} {C:chips}+#4#{} {C:inactive}Chips{}"
+			}, 
+			{
+				"{C:inactive,E:1}Art by Superb Thing{}"
+			}
+		}
+	},
+	set = 'may_modifiercard',
+	pos = { x = 0, y = 0 },
+	cost = 4,
+	unlocked = true,
+	discovered = true,
+	atlas = 'modifier',
+	modifier_shader = 'may_amber',
+	can_use = function(self, card)
+		if G.hand then
+			for k, v in pairs(G.hand.cards) do 
+				if v.edition and v.edition.key == card.ability.extra.target then
+					return may.canuse()
+				end
+			end
+		end
+		return false
+	end,
+	loc_vars = function(self, info_queue, card) 
+		info_queue[#info_queue + 1] = G.P_CENTERS[card.ability.extra.target]
+		local amount = 0
+		if G.hand then
+			for k, v in pairs(G.hand.cards) do 
+				if v.edition and v.edition.key == card.ability.extra.target then
+					amount = amount + 1
+				end
+			end
+		end 
+		return { vars = { math.abs(card.ability.extra.bonus1), card.ability.extra.bonus2,  math.abs(card.ability.extra.bonus1) * amount, card.ability.extra.bonus2 * amount } }
+	end,
+	use = function(self, card, area, copier)
+		local targets = {}
+		for k, v in pairs(G.hand.cards) do 
+			if v.edition and v.edition.key == card.ability.extra.target then 
+				table.insert(targets, v)
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 0.85 + (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = true
+				play_sound('card1', percent)
+			return true end})) 
+		end
+		for k, v in pairs(targets) do 
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'-'.. math.abs(card.ability.extra.bonus1)}, colour = G.C.MULT, delay = 0.45})
+			for k2, v2 in pairs(G.playing_cards) do
+				if not table_hasvalue(targets, v2) then 
+					v2.ability.perma_mult = (v2.ability.perma_mult or 0) + card.ability.extra.bonus1
+					if v2.area ~= G.deck and v2.area ~= G.discard then
+						G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+							v2:juice_up(0.3, 0.5)
+							play_sound('may_permabonus', 1, 0.5)
+						return true end})) 
+					end 
+				end
+			end
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..card.ability.extra.bonus2}, colour = G.C.CHIPS, delay = 0.45})
+			for k2, v2 in pairs(G.playing_cards) do
+				if not table_hasvalue(targets, v2) then 
+					v2.ability.perma_bonus = (v2.ability.perma_bonus or 0) + card.ability.extra.bonus2
+					if v2.area ~= G.deck and v2.area ~= G.discard then
+						G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+							v2:juice_up(0.3, 0.5)
+							play_sound('may_permabonus', 1, 0.5)
+						return true end})) 
+					end 
+				end
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 1.15 - (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = false
+				play_sound('card1', percent)
+			return true end})) 
+		end
+	end,
+	bulk_use = function(self, card, area, copier, number)
+		local targets = {}
+		for k, v in pairs(G.hand.cards) do 
+			if v.edition and v.edition.key == card.ability.extra.target then 
+				table.insert(targets, v)
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 0.85 + (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = true
+				play_sound('card1', percent)
+			return true end})) 
+		end
+		for k, v in pairs(targets) do 
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'-'.. math.abs(card.ability.extra.bonus1) * number}, colour = G.C.MULT, delay = 0.45})
+			for k2, v2 in pairs(G.playing_cards) do
+				if not table_hasvalue(targets, v2) then 
+					v2.ability.perma_mult = (v2.ability.perma_mult or 0) + (card.ability.extra.bonus1 * number)
+					if v2.area ~= G.deck and v2.area ~= G.discard then
+						G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+							v2:juice_up(0.3, 0.5)
+							play_sound('may_permabonus', 1, 0.5)
+						return true end})) 
+					end 
+				end
+			end
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..card.ability.extra.bonus2 * number}, colour = G.C.CHIPS, delay = 0.45})
+			for k2, v2 in pairs(G.playing_cards) do
+				if not table_hasvalue(targets, v2) then 
+					v2.ability.perma_bonus = (v2.ability.perma_bonus or 0) + (card.ability.extra.bonus2 * number)
+					if v2.area ~= G.deck and v2.area ~= G.discard then
+						G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+							v2:juice_up(0.3, 0.5)
+							play_sound('may_permabonus', 1, 0.5)
+						return true end})) 
+					end 
+				end
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 1.15 - (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = false
+				play_sound('card1', percent)
+			return true end})) 
+		end
+	end, 
+	draw = function(self, card, layer)
+		if (layer == 'card' or layer == 'both') and card.sprite_facing == 'front' then
+			card.children.center:draw_shader(self.modifier_shader, nil, card.ARGS.send_to_shader)
+		end
+	end 
+}
+
+SMODS.Consumable {
+	key = 'goldfoil_card',
+	config = { extra = { bonus1 = 1.5, target = 'e_may_goldfoil' } },
+	loc_txt = {
+		name = 'Goldfoil Card',
+		text = {
+			{
+				"Each card with {C:dark_edition}Goldfoil Edition{}", 
+				"{C:attention}held in hand{} gives", 
+				"{C:money}+#1#${} to {C:attention}all{}", 
+				"other {C:attention}playing cards{} in full deck", 
+				"{C:inactive}Currently{} {C:money}+#2#${}"
+			}, 
+			{
+				"{C:inactive,E:1}Art by Superb Thing{}"
+			}
+		}
+	},
+	set = 'may_modifiercard',
+	pos = { x = 0, y = 0 },
+	cost = 4,
+	unlocked = true,
+	discovered = true,
+	atlas = 'modifier',
+	modifier_shader = 'may_goldfoil',
+	can_use = function(self, card)
+		if G.hand then
+			for k, v in pairs(G.hand.cards) do 
+				if v.edition and v.edition.key == card.ability.extra.target then
+					return may.canuse()
+				end
+			end
+		end
+		return false
+	end,
+	loc_vars = function(self, info_queue, card) 
+		info_queue[#info_queue + 1] = G.P_CENTERS[card.ability.extra.target]
+		local amount = 0
+		if G.hand then
+			for k, v in pairs(G.hand.cards) do 
+				if v.edition and v.edition.key == card.ability.extra.target then
+					amount = amount + 1
+				end
+			end
+		end 
+		return { vars = { card.ability.extra.bonus1, card.ability.extra.bonus1 * amount } }
+	end,
+	use = function(self, card, area, copier)
+		local targets = {}
+		for k, v in pairs(G.hand.cards) do 
+			if v.edition and v.edition.key == card.ability.extra.target then 
+				table.insert(targets, v)
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 0.85 + (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = true
+				play_sound('card1', percent)
+			return true end})) 
+		end
+		for k, v in pairs(targets) do 
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..card.ability.extra.bonus1..'$'}, colour = G.C.MONEY, delay = 0.45})
+			for k2, v2 in pairs(G.playing_cards) do
+				if not table_hasvalue(targets, v2) then 
+					v2.ability.perma_dollars = (v2.ability.perma_dollars or 0) + card.ability.extra.bonus1
+					if v2.area ~= G.deck and v2.area ~= G.discard then
+						G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+							v2:juice_up(0.3, 0.5)
+							play_sound('may_permabonus', 1, 0.5)
+						return true end})) 
+					end 
+				end
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 1.15 - (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = false
+				play_sound('card1', percent)
+			return true end})) 
+		end
+	end,
+	bulk_use = function(self, card, area, copier, number)
+		local targets = {}
+		for k, v in pairs(G.hand.cards) do 
+			if v.edition and v.edition.key == card.ability.extra.target then 
+				table.insert(targets, v)
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 0.85 + (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = true
+				play_sound('card1', percent)
+			return true end})) 
+		end
+		for k, v in pairs(targets) do 
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..(card.ability.extra.perma_dollars * number)..'$'}, colour = G.C.MONEY, delay = 0.45})
+			for k2, v2 in pairs(G.playing_cards) do
+				if not table_hasvalue(targets, v2) then 
+					v2.ability.perma_dollars = (v2.ability.perma_dollars or 0) + (card.ability.extra.perma_dollars * number)
+					if v2.area ~= G.deck and v2.area ~= G.discard then
+						G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+							v2:juice_up(0.3, 0.5)
+							play_sound('may_permabonus', 1, 0.5)
+						return true end})) 
+					end 
+				end
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 1.15 - (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = false
+				play_sound('card1', percent)
+			return true end})) 
+		end
+	end, 
+	draw = function(self, card, layer)
+		if (layer == 'card' or layer == 'both') and card.sprite_facing == 'front' then
+			card.children.center:draw_shader(self.modifier_shader, nil, card.ARGS.send_to_shader)
+		end
+	end 
+}
+
+SMODS.Consumable {
+	key = 'neon_card',
+	config = { extra = { bonus1 = 0.1, target = 'e_may_neon' } },
+	loc_txt = {
+		name = 'Neon Card',
+		text = {
+			{
+				"Each card with {C:dark_edition}Neon Edition{}", 
+				"{C:attention}held in hand{} gives", 
+				"{C:money}+#1#${} per owned card with an {C:dark_edition}Edition",
+				"to {C:attention}all{} other {C:attention}playing cards{} in full deck", 
+				"{C:inactive}Currently{} {C:money}+#2#${}"
+			}, 
+			{
+				"{C:inactive,E:1}Art by Superb Thing{}"
+			}
+		}
+	},
+	set = 'may_modifiercard',
+	pos = { x = 0, y = 0 },
+	cost = 4,
+	unlocked = true,
+	discovered = true,
+	atlas = 'modifier',
+	modifier_shader = 'may_neon',
+	can_use = function(self, card)
+		if G.hand then
+			for k, v in pairs(G.hand.cards) do 
+				if v.edition and v.edition.key == card.ability.extra.target then
+					return may.canuse()
+				end
+			end
+		end
+		return false
+	end,
+	loc_vars = function(self, info_queue, card) 
+		info_queue[#info_queue + 1] = G.P_CENTERS[card.ability.extra.target]
+		local amount = 0
+		local amount2 = 0
+		if G.hand then
+			for k, v in pairs(G.hand.cards) do 
+				if v.edition and v.edition.key == card.ability.extra.target then
+					amount = amount + 1
+				end
+			end
+			for k, v in ipairs(G.jokers.cards) do
+				if v.edition then
+					amount2 = amount2 + 1
+				end
+			end
+			for k, v in ipairs(G.consumeables.cards) do
+				if v.edition then
+					amount2 = amount2 + 1
+				end
+			end
+			for k, v in ipairs(G.playing_cards) do
+				if v.edition then
+					amount2 = amount2 + 1
+				end
+			end
+		end 
+		return { vars = { card.ability.extra.bonus1, card.ability.extra.bonus1 * amount * amount2 } }
+	end,
+	use = function(self, card, area, copier)
+		local targets = {}
+		for k, v in pairs(G.hand.cards) do 
+			if v.edition and v.edition.key == card.ability.extra.target then 
+				table.insert(targets, v)
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 0.85 + (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = true
+				play_sound('card1', percent)
+			return true end})) 
+		end
+		for k, v in pairs(targets) do 
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..card.ability.extra.bonus1 * amount2..'$'}, colour = G.C.MONEY, delay = 0.45})
+			for k2, v2 in pairs(G.playing_cards) do
+				if not table_hasvalue(targets, v2) then 
+					v2.ability.perma_dollars = (v2.ability.perma_dollars or 0) + (card.ability.extra.bonus1 * amount2)
+					if v2.area ~= G.deck and v2.area ~= G.discard then
+						G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+							v2:juice_up(0.3, 0.5)
+							play_sound('may_permabonus', 1, 0.5)
+						return true end})) 
+					end 
+				end
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 1.15 - (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = false
+				play_sound('card1', percent)
+			return true end})) 
+		end
+	end,
+	bulk_use = function(self, card, area, copier, number)
+		local targets = {}
+		for k, v in pairs(G.hand.cards) do 
+			if v.edition and v.edition.key == card.ability.extra.target then 
+				table.insert(targets, v)
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 0.85 + (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = true
+				play_sound('card1', percent)
+			return true end})) 
+		end
+		for k, v in pairs(targets) do 
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..(card.ability.extra.perma_dollars * number * amount2)..'$'}, colour = G.C.MONEY, delay = 0.45})
+			for k2, v2 in pairs(G.playing_cards) do
+				if not table_hasvalue(targets, v2) then 
+					v2.ability.perma_dollars = (v2.ability.perma_dollars or 0) + (card.ability.extra.perma_dollars * number * amount2)
+					if v2.area ~= G.deck and v2.area ~= G.discard then
+						G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+							v2:juice_up(0.3, 0.5)
+							play_sound('may_permabonus', 1, 0.5)
+						return true end})) 
+					end 
+				end
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 1.15 - (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = false
+				play_sound('card1', percent)
+			return true end})) 
+		end
+	end, 
+	draw = function(self, card, layer)
+		if (layer == 'card' or layer == 'both') and card.sprite_facing == 'front' then
+			card.children.center:draw_shader(self.modifier_shader, nil, card.ARGS.send_to_shader)
+		end
+	end 
+}
+
+SMODS.Consumable {
+	key = 'vignette_card',
+	config = { extra = { bonus1 = 2, bonus2 = 0.15, target = 'e_may_vignette' } },
+	loc_txt = {
+		name = 'Vignette Card',
+		text = {
+			{
+				"Each card with {C:dark_edition}Vignette Edition{}", 
+				"{C:attention}held in hand{} gives", 
+				"{C:purple}+#1#{} Mult & Chips and {X:purple,C:white}+X#2#{} Mult & Chips to {C:attention}all{}", 
+				"other {C:attention}playing cards{} in full deck", 
+				"{C:inactive}Currently{} {C:purple}+#3#{} {C:inactive}Mult & Chips and{} {X:purple,C:white}+X#4#{} {C:inactive}Mult & Chips{}"
+			}, 
+			{
+				"{C:inactive,E:1}Art by Superb Thing{}"
+			}
+		}
+	},
+	set = 'may_modifiercard',
+	pos = { x = 0, y = 0 },
+	cost = 4,
+	unlocked = true,
+	discovered = true,
+	atlas = 'modifier',
+	modifier_shader = 'may_shimmering',
+	can_use = function(self, card)
+		if G.hand then
+			for k, v in pairs(G.hand.cards) do 
+				if v.edition and v.edition.key == card.ability.extra.target then
+					return may.canuse()
+				end
+			end
+		end
+		return false
+	end,
+	loc_vars = function(self, info_queue, card) 
+		info_queue[#info_queue + 1] = G.P_CENTERS[card.ability.extra.target]
+		local amount = 0
+		if G.hand then
+			for k, v in pairs(G.hand.cards) do 
+				if v.edition and v.edition.key == card.ability.extra.target then
+					amount = amount + 1
+				end
+			end
+		end 
+		return { vars = { card.ability.extra.bonus1, card.ability.extra.bonus2,  card.ability.extra.bonus1 * amount, card.ability.extra.bonus2 * amount } }
+	end,
+	use = function(self, card, area, copier)
+		local targets = {}
+		for k, v in pairs(G.hand.cards) do 
+			if v.edition and v.edition.key == card.ability.extra.target then 
+				table.insert(targets, v)
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 0.85 + (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = true
+				play_sound('card1', percent)
+			return true end})) 
+		end
+		for k, v in pairs(targets) do 
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..card.ability.extra.bonus1..'Mult & Chips'}, colour = G.C.PURPLE, delay = 0.45})
+			for k2, v2 in pairs(G.playing_cards) do
+				if not table_hasvalue(targets, v2) then 
+					v2.ability.perma_mult = (v2.ability.perma_mult or 0) + card.ability.extra.bonus1
+					v2.ability.perma_chips = (v2.ability.perma_chips or 0) + card.ability.extra.bonus1
+					if v2.area ~= G.deck and v2.area ~= G.discard then
+						G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+							v2:juice_up(0.3, 0.5)
+							play_sound('may_permabonus', 1, 0.5)
+						return true end})) 
+					end 
+				end
+			end
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+X'..card.ability.extra.bonus2..'Mult & Chips'}, colour = G.C.PURPLE, delay = 0.45})
+			for k2, v2 in pairs(G.playing_cards) do
+				if not table_hasvalue(targets, v2) then 
+					v2.ability.perma_x_mult = (v2.ability.perma_x_mult or 0) + card.ability.extra.bonus2
+					v2.ability.perma_x_chips = (v2.ability.perma_x_chips or 0) + card.ability.extra.bonus2
+					if v2.area ~= G.deck and v2.area ~= G.discard then
+						G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+							v2:juice_up(0.3, 0.5)
+							play_sound('may_permabonus', 1, 0.5)
+						return true end})) 
+					end 
+				end
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 1.15 - (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = false
+				play_sound('card1', percent)
+			return true end})) 
+		end
+	end,
+	bulk_use = function(self, card, area, copier, number)
+		local targets = {}
+		for k, v in pairs(G.hand.cards) do 
+			if v.edition and v.edition.key == card.ability.extra.target then 
+				table.insert(targets, v)
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 0.85 + (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = true
+				play_sound('card1', percent)
+			return true end})) 
+		end
+		for k, v in pairs(targets) do 
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..(card.ability.extra.bonus1 * number)..'Mult & Chips'}, colour = G.C.PURPLE, delay = 0.45})
+			for k2, v2 in pairs(G.playing_cards) do
+				if not table_hasvalue(targets, v2) then 
+					v2.ability.perma_mult = (v2.ability.perma_mult or 0) + (card.ability.extra.bonus1 * number)
+					v2.ability.perma_chips = (v2.ability.perma_chips or 0) + (card.ability.extra.bonus1 * number)
+					if v2.area ~= G.deck and v2.area ~= G.discard then
+						G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+							v2:juice_up(0.3, 0.5)
+							play_sound('may_permabonus', 1, 0.5)
+						return true end})) 
+					end 
+				end
+			end
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+X'..(card.ability.extra.bonus2 * number)..'Mult & Chips'}, colour = G.C.PURPLE, delay = 0.45})
+			for k2, v2 in pairs(G.playing_cards) do
+				if not table_hasvalue(targets, v2) then 
+					v2.ability.perma_x_mult = (v2.ability.perma_x_mult or 0) + (card.ability.extra.bonus2 * number)
+					v2.ability.perma_x_chips = (v2.ability.perma_x_chips or 0) + (card.ability.extra.bonus2 * number)
+					if v2.area ~= G.deck and v2.area ~= G.discard then
+						G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+							v2:juice_up(0.3, 0.5)
+							play_sound('may_permabonus', 1, 0.5)
+						return true end})) 
+					end 
+				end
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 1.15 - (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = false
+				play_sound('card1', percent)
+			return true end})) 
+		end
+	end, 
+	draw = function(self, card, layer)
+		if (layer == 'card' or layer == 'both') and card.sprite_facing == 'front' then
+			card.children.center:draw_shader(self.modifier_shader, nil, card.ARGS.send_to_shader)
+		end
+	end 
+}
+
 -- Seal Cards
 
 SMODS.Consumable {
@@ -3568,6 +4140,889 @@ SMODS.Consumable {
 					G.consumeables:emplace(card2)
 					play_sound('timpani')
 				return true end}))
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 1.15 - (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = false
+				play_sound('card1', percent)
+			return true end})) 
+		end
+	end, 
+}
+
+SMODS.Consumable {
+	key = 'lime_seal_card',
+	config = { extra = { x_chips = 1.2, target = 'may_lime_seal' } },
+	loc_txt = {
+		name = 'Lime Seal Card',
+		text = {
+			{
+				"Each card with {C:dark_edition}Lime Seal{}", 
+				"{C:attention}held in hand{} gives", 
+				"{X:chips,C:white}X#1#{} Chips to all {C:purple}Poker Hands{}", 
+				"{C:inactive}Currently X#2# Chips{}",
+			}, 
+		}
+	},
+	set = 'may_modifiercard',
+	pos = { x = 2, y = 1 },
+	cost = 4,
+	unlocked = true,
+	discovered = true,
+	atlas = 'modifier',
+	can_use = function(self, card)
+		if G.hand then
+			for k, v in pairs(G.hand.cards) do 
+				if v.seal and v.seal == card.ability.extra.target then
+					return may.canuse()
+				end
+			end
+		end
+		return false
+	end,
+	loc_vars = function(self, info_queue, card) 
+		info_queue[#info_queue + 1] = SMODS.Seals[card.ability.extra.target]
+		local amount = 0
+		if G.hand then
+			for k, v in pairs(G.hand.cards) do 
+				if v.seal and v.seal == card.ability.extra.target then
+					amount = amount + 1
+				end
+			end
+		end 
+		return { vars = { card.ability.extra.x_chips, card.ability.extra.x_chips ^ amount } }
+	end,
+	use = function(self, card, area, copier)
+		local targets = {}
+		for k, v in pairs(G.hand.cards) do 
+			if v.seal and v.seal == card.ability.extra.target then 
+				table.insert(targets, v)
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 0.85 + (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = true
+				play_sound('card1', percent)
+			return true end})) 
+		end
+		for k, v in pairs(targets) do 
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'X'..card.ability.extra.x_chips..' Chips'}, colour = G.C.CHIPS, delay = 0.45})
+			may.hand_multchips_all(card, false, {0, card.ability.extra.x_chips})
+		end
+		for k, v in pairs(targets) do 
+			local percent = 1.15 - (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = false
+				play_sound('card1', percent)
+			return true end})) 
+		end
+	end,
+	bulk_use = function(self, card, area, copier, number)
+		local targets = {}
+		for k, v in pairs(G.hand.cards) do 
+			if v.seal and v.seal == card.ability.extra.target then 
+				table.insert(targets, v)
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 0.85 + (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = true
+				play_sound('card1', percent)
+			return true end})) 
+		end
+		for k, v in pairs(targets) do 
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'X'..card.ability.extra.x_chips ^ number..' Chips'}, colour = G.C.CHIPS, delay = 0.45})
+			may.hand_multchips_all(card, false, {0, card.ability.extra.x_chips ^ number})
+		end
+		for k, v in pairs(targets) do 
+			local percent = 1.15 - (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = false
+				play_sound('card1', percent)
+			return true end})) 
+		end
+	end, 
+}
+
+SMODS.Consumable {
+	key = 'inverted_seal_card',
+	config = { extra = { consumables = 1, target = 'may_inverted_seal' } },
+	loc_txt = {
+		name = 'Inverted Seal Card',
+		text = {
+			{
+				"Each card with {C:dark_edition}Inverted Seal{}", 
+				"{C:attention}held in hand{} creates", 
+				"{C:attention}#1#{} random {C:dark_edition}Negative{} {C:attention}Consumable{}",
+				"{C:inactive}Currently #2# Consumables{}",
+			}, 
+		}
+	},
+	set = 'may_modifiercard',
+	pos = { x = 0, y = 0 },
+	cost = 4,
+	unlocked = true,
+	discovered = true,
+	atlas = 'modifier',
+	can_use = function(self, card)
+		if G.hand then
+			for k, v in pairs(G.hand.cards) do 
+				if v.seal and v.seal == card.ability.extra.target then
+					return may.canuse()
+				end
+			end
+		end
+		return false
+	end,
+	loc_vars = function(self, info_queue, card)
+		info_queue[#info_queue + 1] = SMODS.Seals[card.ability.extra.target]
+		info_queue[#info_queue + 1] = { key = "e_negative_consumable", set = "Edition", config = { extra = 1 } }
+		local amount = 0
+		if G.hand then
+			for k, v in pairs(G.hand.cards) do 
+				if v.seal and v.seal == card.ability.extra.target then
+					amount = amount + 1
+				end
+			end
+		end 
+		return { vars = { card.ability.extra.consumables, card.ability.extra.consumables * amount } }
+	end,
+	use = function(self, card, area, copier)
+		local targets = {}
+		for k, v in pairs(G.hand.cards) do 
+			if v.seal and v.seal == card.ability.extra.target then 
+				table.insert(targets, v)
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 0.85 + (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = true
+				play_sound('card1', percent)
+			return true end})) 
+		end
+		for k, v in pairs(targets) do 
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..card.ability.extra.consumables..' Consumable'}, colour = G.C.DARK_EDITION, delay = 0.45})
+			for i = 1, card.ability.extra.consumables do
+				G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2, func = function()
+					local choice = may.random_consumable('may_inverted_seal_card')
+					local card2 = create_card(choice.set, G.consumables, nil, nil, nil, nil, choice.key, "may_inverted_seal_card")
+					card2:add_to_deck()
+					card2:set_edition('e_negative')
+					G.consumeables:emplace(card2)
+					play_sound('timpani')
+				return true end}))
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 1.15 - (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = false
+				play_sound('card1', percent)
+			return true end})) 
+		end
+	end,
+	bulk_use = function(self, card, area, copier, number)
+		local targets = {}
+		for k, v in pairs(G.hand.cards) do 
+			if v.seal and v.seal == card.ability.extra.target then 
+				table.insert(targets, v)
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 0.85 + (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = true
+				play_sound('card1', percent)
+			return true end})) 
+		end
+		for k, v in pairs(targets) do 
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..card.ability.extra.consumables * number..' Consumables'}, colour = G.C.DARK_EDITION, delay = 0.45})
+			for i = 1, card.ability.extra.consumables * number do
+				G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2, func = function()
+					local choice = may.random_consumable('may_inverted_seal_card')
+					local card2 = create_card(choice.set, G.consumables, nil, nil, nil, nil, choice.key, "may_inverted_seal_card")
+					card2:add_to_deck()
+					card2:set_edition('e_negative')
+					G.consumeables:emplace(card2)
+					play_sound('timpani')
+				return true end}))
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 1.15 - (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = false
+				play_sound('card1', percent)
+			return true end})) 
+		end
+	end, 
+}
+
+SMODS.Consumable {
+	key = 'orange_seal_card',
+	config = { extra = { x_mult = 1.2, target = 'may_orange_seal' } },
+	loc_txt = {
+		name = 'Orange Seal Card',
+		text = {
+			{
+				"Each card with {C:dark_edition}Orange Seal{}", 
+				"{C:attention}held in hand{} gives", 
+				"{X:mult,C:white}X#1#{} Mult to all {C:purple}Poker Hands{}", 
+				"{C:inactive}Currently X#2# Mult{}",
+			}, 
+		}
+	},
+	set = 'may_modifiercard',
+	pos = { x = 0, y = 0 },
+	cost = 4,
+	unlocked = true,
+	discovered = true,
+	atlas = 'modifier',
+	can_use = function(self, card)
+		if G.hand then
+			for k, v in pairs(G.hand.cards) do 
+				if v.seal and v.seal == card.ability.extra.target then
+					return may.canuse()
+				end
+			end
+		end
+		return false
+	end,
+	loc_vars = function(self, info_queue, card) 
+		info_queue[#info_queue + 1] = SMODS.Seals[card.ability.extra.target]
+		local amount = 0
+		if G.hand then
+			for k, v in pairs(G.hand.cards) do 
+				if v.seal and v.seal == card.ability.extra.target then
+					amount = amount + 1
+				end
+			end
+		end 
+		return { vars = { card.ability.extra.x_mult, card.ability.extra.x_mult ^ amount } }
+	end,
+	use = function(self, card, area, copier)
+		local targets = {}
+		for k, v in pairs(G.hand.cards) do 
+			if v.seal and v.seal == card.ability.extra.target then 
+				table.insert(targets, v)
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 0.85 + (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = true
+				play_sound('card1', percent)
+			return true end})) 
+		end
+		for k, v in pairs(targets) do 
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'X'..card.ability.extra.x_mult..' Mult'}, colour = G.C.MULT, delay = 0.45})
+			may.hand_multchips_all(card, false, nil, {0, card.ability.extra.x_mult})
+		end
+		for k, v in pairs(targets) do 
+			local percent = 1.15 - (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = false
+				play_sound('card1', percent)
+			return true end})) 
+		end
+	end,
+	bulk_use = function(self, card, area, copier, number)
+		local targets = {}
+		for k, v in pairs(G.hand.cards) do 
+			if v.seal and v.seal == card.ability.extra.target then 
+				table.insert(targets, v)
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 0.85 + (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = true
+				play_sound('card1', percent)
+			return true end})) 
+		end
+		for k, v in pairs(targets) do 
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'X'..card.ability.extra.x_mult ^ number..' Mult'}, colour = G.C.MULT, delay = 0.45})
+			may.hand_multchips_all(card, false, nil, {0, card.ability.extra.x_chips ^ number})
+		end
+		for k, v in pairs(targets) do 
+			local percent = 1.15 - (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = false
+				play_sound('card1', percent)
+			return true end})) 
+		end
+	end, 
+}
+
+SMODS.Consumable {
+	key = 'pink_seal_card',
+	config = { extra = { x_level = 1.15, x_dollars = 0.75, target = 'may_pink_seal' } },
+	loc_txt = {
+		name = 'Pink Seal Card',
+		text = {
+			{
+				"Each card with {C:dark_edition}Pink Seal{}", 
+				"{C:attention}held in hand{} gives", 
+				"{X:planet,C:white}X#1#{} Level but {X:money,C:white}X#2#${}",
+				"to all {C:purple}Poker Hands{}", 
+				"{C:inactive}Currently X#3# Level and X#4#${}",
+			}, 
+		}
+	},
+	set = 'may_modifiercard',
+	pos = { x = 0, y = 0 },
+	cost = 4,
+	unlocked = true,
+	discovered = true,
+	atlas = 'modifier',
+	can_use = function(self, card)
+		if G.hand then
+			for k, v in pairs(G.hand.cards) do 
+				if v.seal and v.seal == card.ability.extra.target then
+					return may.canuse()
+				end
+			end
+		end
+		return false
+	end,
+	loc_vars = function(self, info_queue, card) 
+		info_queue[#info_queue + 1] = SMODS.Seals[card.ability.extra.target]
+		local amount = 0
+		if G.hand then
+			for k, v in pairs(G.hand.cards) do 
+				if v.seal and v.seal == card.ability.extra.target then
+					amount = amount + 1
+				end
+			end
+		end 
+		return { vars = { card.ability.extra.x_level, card.ability.extra.x_dollars, card.ability.extra.x_level ^ amount, card.ability.extra.x_dollars ^ amount } }
+	end,
+	use = function(self, card, area, copier)
+		local targets = {}
+		for k, v in pairs(G.hand.cards) do 
+			if v.seal and v.seal == card.ability.extra.target then 
+				table.insert(targets, v)
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 0.85 + (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = true
+				play_sound('card1', percent)
+			return true end})) 
+		end
+		for k, v in pairs(targets) do 
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'X'..card.ability.extra.x_level..' Level'}, colour = G.C.SECONDARY_SET.Planet, delay = 0.45})
+			may.level_up_all_hands_hyper(card, false, card.ability.extra.x_level, 0)
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'X'..card.ability.extra.dollars..'$'}, colour = G.C.MONEY, delay = 0.45})
+			may.hand_mod_dollars_all(card, false, card.ability.extra.x_dollars, 0)
+		end
+		for k, v in pairs(targets) do 
+			local percent = 1.15 - (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = false
+				play_sound('card1', percent)
+			return true end})) 
+		end
+	end,
+	bulk_use = function(self, card, area, copier, number)
+		local targets = {}
+		for k, v in pairs(G.hand.cards) do 
+			if v.seal and v.seal == card.ability.extra.target then 
+				table.insert(targets, v)
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 0.85 + (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = true
+				play_sound('card1', percent)
+			return true end})) 
+		end
+		for k, v in pairs(targets) do 
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'X'..card.ability.extra.x_level ^ number..' Level'}, colour = G.C.SECONDARY_SET.Planet, delay = 0.45})
+			may.level_up_all_hands_hyper(card, false, card.ability.extra.x_level ^ number, 0)
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'X'..card.ability.extra.dollars ^ number..'$'}, colour = G.C.MONEY, delay = 0.45})
+			may.hand_mod_dollars_all(card, false, card.ability.extra.x_dollars ^ number, 0)
+		end
+		for k, v in pairs(targets) do 
+			local percent = 1.15 - (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = false
+				play_sound('card1', percent)
+			return true end})) 
+		end
+	end, 
+}
+
+SMODS.Consumable {
+	key = 'silver_seal_card',
+	config = { extra = { x_mult = 1.1, mul = 1.4, target = 'may_silver_seal' } },
+	loc_txt = {
+		name = 'Silver Seal Card',
+		text = {
+			{
+				"Each card with {C:dark_edition}Silver Seal{}", 
+				"{C:attention}held in hand{} gives", 
+				"{X:planet,C:white}X#1#{} Mult to all {C:purple}Poker Hands{},", 
+				"{C:green}bonus{} per card is {C:green}multiplied{} by {X:green,C:white}X#2#{}",
+				"for every card with {C:dark_edition}Silver Seal{}", 
+				"{C:attention}held in hand{}", 
+				"{C:inactive}Currently X#3# Mult{}",
+			}, 
+		}
+	},
+	set = 'may_modifiercard',
+	pos = { x = 0, y = 0 },
+	cost = 4,
+	unlocked = true,
+	discovered = true,
+	atlas = 'modifier',
+	can_use = function(self, card)
+		if G.hand then
+			for k, v in pairs(G.hand.cards) do 
+				if v.seal and v.seal == card.ability.extra.target then
+					return may.canuse()
+				end
+			end
+		end
+		return false
+	end,
+	loc_vars = function(self, info_queue, card) 
+		info_queue[#info_queue + 1] = SMODS.Seals[card.ability.extra.target]
+		local amount = 0
+		if G.hand then
+			for k, v in pairs(G.hand.cards) do 
+				if v.seal and v.seal == card.ability.extra.target then
+					amount = amount + 1
+				end
+			end
+		end 
+		return { vars = { card.ability.extra.x_mult, card.ability.extra.mul, (card.ability.extra.x_mult * (card.ability.extra.mul ^ amount)) ^ amount, } }
+	end,
+	use = function(self, card, area, copier)
+		local targets = {}
+		for k, v in pairs(G.hand.cards) do 
+			if v.seal and v.seal == card.ability.extra.target then 
+				table.insert(targets, v)
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 0.85 + (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = true
+				play_sound('card1', percent)
+			return true end})) 
+		end
+		for k, v in pairs(targets) do 
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'X'..(card.ability.extra.x_mult * (card.ability.extra.mul ^ #targets))..' Mult'}, colour = G.C.MULT, delay = 0.45})
+			may.hand_multchips_all(card, false, nil, {0, (card.ability.extra.x_mult * (card.ability.extra.mul ^ #targets))})
+		end
+		for k, v in pairs(targets) do 
+			local percent = 1.15 - (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = false
+				play_sound('card1', percent)
+			return true end})) 
+		end
+	end,
+	bulk_use = function(self, card, area, copier, number)
+		local targets = {}
+		for k, v in pairs(G.hand.cards) do 
+			if v.seal and v.seal == card.ability.extra.target then 
+				table.insert(targets, v)
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 0.85 + (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = true
+				play_sound('card1', percent)
+			return true end})) 
+		end
+		for k, v in pairs(targets) do 
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'X'..((card.ability.extra.x_mult * (card.ability.extra.mul ^ #targets)) ^ number)..' Mult'}, colour = G.C.MULT, delay = 0.45})
+			may.hand_multchips_all(card, false, nil, {0, ((card.ability.extra.x_mult * (card.ability.extra.mul ^ #targets)) ^ number)})
+		end
+		for k, v in pairs(targets) do 
+			local percent = 1.15 - (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = false
+				play_sound('card1', percent)
+			return true end})) 
+		end
+	end, 
+}
+
+SMODS.Consumable {
+	key = 'white_seal_card',
+	config = { extra = { add_mul = 2, target = 'may_white_seal' } },
+	loc_txt = {
+		name = 'White Seal Card',
+		text = {
+			{
+				"Each card with {C:dark_edition}White Seal{}", 
+				"{C:attention}held in hand{} gains", 
+				"{X:attention,C:white}+X#1#{} Nominal Chips", 
+			}, 
+		}
+	},
+	set = 'may_modifiercard',
+	pos = { x = 0, y = 0 },
+	cost = 4,
+	unlocked = true,
+	discovered = true,
+	atlas = 'modifier',
+	can_use = function(self, card)
+		if G.hand then
+			for k, v in pairs(G.hand.cards) do 
+				if v.seal and v.seal == card.ability.extra.target then
+					return may.canuse()
+				end
+			end
+		end
+		return false
+	end,
+	loc_vars = function(self, info_queue, card) 
+		info_queue[#info_queue + 1] = SMODS.Seals[card.ability.extra.target]
+		return { vars = { card.ability.extra.add_mul, } }
+	end,
+	use = function(self, card, area, copier)
+		local targets = {}
+		for k, v in pairs(G.hand.cards) do 
+			if v.seal and v.seal == card.ability.extra.target then 
+				table.insert(targets, v)
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 0.85 + (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = true
+				play_sound('card1', percent)
+			return true end})) 
+		end
+		for k, v in pairs(targets) do 
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+X'..card.ability.extra.add_mul..' Nominal Chips'}, colour = G.C.ATTENTION, delay = 0.45})
+			v.ability.nominal_multiplier = (v.ability.nominal_multiplier or 1) + card.ability.extra.add_mul
+			G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2, func = function()
+				v:juice_up(0.3, 0.5)
+				play_sound('may_nominal_chips')
+			return true end}))
+		end
+		for k, v in pairs(targets) do 
+			local percent = 1.15 - (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = false
+				play_sound('card1', percent)
+			return true end})) 
+		end
+	end,
+	bulk_use = function(self, card, area, copier, number)
+		local targets = {}
+		for k, v in pairs(G.hand.cards) do 
+			if v.seal and v.seal == card.ability.extra.target then 
+				table.insert(targets, v)
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 0.85 + (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = true
+				play_sound('card1', percent)
+			return true end})) 
+		end
+		for k, v in pairs(targets) do 
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+X'..(card.ability.extra.add_mul * number)..' Nominal Chips'}, colour = G.C.ATTENTION, delay = 0.45})
+			v.ability.nominal_multiplier = (v.ability.nominal_multiplier or 1) + (card.ability.extra.add_mul * number)
+			G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2, func = function()
+				v:juice_up(0.3, 0.5)
+				play_sound('may_nominal_chips')
+			return true end}))
+		end
+		for k, v in pairs(targets) do 
+			local percent = 1.15 - (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = false
+				play_sound('card1', percent)
+			return true end})) 
+		end
+	end, 
+}
+
+SMODS.Consumable {
+	key = 'black_seal_card',
+	config = { extra = { add_mul = 0.5, target = 'may_black_seal' } },
+	loc_txt = {
+		name = 'Black Seal Card',
+		text = {
+			{
+				"Each card with {C:dark_edition}Black Seal{}", 
+				"{C:attention}held in hand{} gives", 
+				"{X:chips,C:white}+X#1#{} Chips to all",
+				"cards with {C:dark_edition}Black Seal{} in full deck{}",
+				"{C:inactive}Currently +X#2# Chips{}",
+			}, 
+		}
+	},
+	set = 'may_modifiercard',
+	pos = { x = 0, y = 0 },
+	cost = 4,
+	unlocked = true,
+	discovered = true,
+	atlas = 'modifier',
+	can_use = function(self, card)
+		if G.hand then
+			for k, v in pairs(G.hand.cards) do 
+				if v.seal and v.seal == card.ability.extra.target then
+					return may.canuse()
+				end
+			end
+		end
+		return false
+	end,
+	loc_vars = function(self, info_queue, card) 
+		info_queue[#info_queue + 1] = SMODS.Seals[card.ability.extra.target]
+		local amount = 0
+		if G.hand then
+			for k, v in pairs(G.hand.cards) do 
+				if v.seal and v.seal == card.ability.extra.target then
+					amount = amount + 1
+				end
+			end
+		end 
+		return { vars = { card.ability.extra.add_mul, card.ability.extra.add_mul * amount } }
+	end,
+	use = function(self, card, area, copier)
+		local targets = {}
+		for k, v in pairs(G.hand.cards) do 
+			if v.seal and v.seal == card.ability.extra.target then 
+				table.insert(targets, v)
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 0.85 + (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = true
+				play_sound('card1', percent)
+			return true end})) 
+		end
+		for k, v in pairs(targets) do 
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+X'..card.ability.extra.add_mul..' Chips'}, colour = G.C.CHIPS, delay = 0.45})
+			for k2, v2 in pairs(G.playing_cards) do
+				if v2.seal and v2.seal == card.ability.extra.target then 
+					v2.ability.perma_x_chips = (v2.ability.perma_x_chips or 0) + card.ability.extra.add_mul
+					if v2.area == G.hand or v2.area == G.jokers or v2.area == G.consumeables then
+						G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2, func = function()
+							v2:juice_up(0.3, 0.5)
+							play_sound('may_permabonus')
+						return true end}))
+					end
+				end
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 1.15 - (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = false
+				play_sound('card1', percent)
+			return true end})) 
+		end
+	end,
+	bulk_use = function(self, card, area, copier, number)
+		local targets = {}
+		for k, v in pairs(G.hand.cards) do 
+			if v.seal and v.seal == card.ability.extra.target then 
+				table.insert(targets, v)
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 0.85 + (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = true
+				play_sound('card1', percent)
+			return true end})) 
+		end
+		for k, v in pairs(targets) do 
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+X'..(card.ability.extra.add_mul * number)..' Chips'}, colour = G.C.CHIPS, delay = 0.45})
+			for k2, v2 in pairs(G.playing_cards) do
+				if v2.seal and v2.seal == card.ability.extra.target then 
+					v2.ability.perma_x_chips = (v2.ability.perma_x_chips or 0) + (card.ability.extra.add_mul * number)
+					if v2.area == G.hand or v2.area == G.jokers or v2.area == G.consumeables then
+						G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2, func = function()
+							v2:juice_up(0.3, 0.5)
+							play_sound('may_permabonus')
+						return true end}))
+					end
+				end
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 1.15 - (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = false
+				play_sound('card1', percent)
+			return true end})) 
+		end
+	end, 
+}
+
+SMODS.Consumable {
+	key = 'error_seal_card',
+	config = { extra = { target = 'may_error_seal' } },
+	loc_txt = {
+		name = 'ERROR Seal Card',
+		text = {
+			{
+				"Each card with {C:dark_edition}ERROR Seal{}", 
+				"{C:attention}held in hand{} gives", 
+				"{C:may_ethereal,E:1}unknown{} bonuses",
+				"{C:inactive}Currently #1# ????s{}",
+			}, 
+		}
+	},
+	set = 'may_modifiercard',
+	pos = { x = 0, y = 0 },
+	cost = 4,
+	unlocked = true,
+	discovered = true,
+	atlas = 'modifier',
+	can_use = function(self, card)
+		if G.hand then
+			for k, v in pairs(G.hand.cards) do 
+				if v.seal and v.seal == card.ability.extra.target then
+					return may.canuse()
+				end
+			end
+		end
+		return false
+	end,
+	loc_vars = function(self, info_queue, card) 
+		info_queue[#info_queue + 1] = SMODS.Seals[card.ability.extra.target]
+		local amount = 0
+		if G.hand then
+			for k, v in pairs(G.hand.cards) do 
+				if v.seal and v.seal == card.ability.extra.target then
+					amount = amount + 1
+				end
+			end
+		end 
+		return { vars = { amount } }
+	end,
+	use = function(self, card, area, copier)
+		local targets = {}
+		for k, v in pairs(G.hand.cards) do 
+			if v.seal and v.seal == card.ability.extra.target then 
+				table.insert(targets, v)
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 0.85 + (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = true
+				play_sound('card1', percent)
+			return true end})) 
+		end
+		for k, v in pairs(targets) do 
+			local choice = pseudorandom(pseudoseed('may_present'), 1, 5)
+			if choice == 1 then 
+				card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+1 Tarot'}, colour = G.C.SECONDARY_SET.Tarot, delay = 0.45})
+				G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
+					card:juice_up(0.3, 0.5)
+					SMODS.add_card({ set = 'Tarot' })
+					play_sound('timpani')
+				return true end})) 
+			elseif choice == 2 then 
+				card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+1 Planet'}, colour = G.C.SECONDARY_SET.Planet, delay = 0.45})
+				G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
+					card:juice_up(0.3, 0.5)
+					SMODS.add_card({ set = 'Planet' })
+					play_sound('timpani')
+				return true end})) 
+			elseif choice == 3 then 
+				card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+0.1 Interest'}, colour = G.C.MONEY, delay = 0.45})
+				may.ease_interest(-1, 0.5)
+				G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
+					card:juice_up(0.3, 0.5)
+				return true end}))
+			elseif choice == 4 then 
+				card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+1 Tag'}, colour = G.C.FILTER, delay = 0.45})
+				may.random_tag()
+				G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
+					play_sound('tarot1')
+					card:juice_up(0.3, 0.5)
+				return true end}))
+			else
+				card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+1 Consumable Slot'}, colour = G.C.FILTER, delay = 0.45})
+				G.consumeables:change_size(1)
+				G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
+					card:juice_up(0.3, 0.5)
+				return true end}))
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 1.15 - (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = false
+				play_sound('card1', percent)
+			return true end})) 
+		end
+	end,
+	bulk_use = function(self, card, area, copier, number)
+		local targets = {}
+		for k, v in pairs(G.hand.cards) do 
+			if v.seal and v.seal == card.ability.extra.target then 
+				table.insert(targets, v)
+			end
+		end
+		for k, v in pairs(targets) do 
+			local percent = 0.85 + (k-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+				v.highlighted = true
+				play_sound('card1', percent)
+			return true end})) 
+		end
+		for k, v in pairs(targets) do 
+			for i = 1, number do
+				local choice = pseudorandom(pseudoseed('may_present'), 1, 5)
+				if choice == 1 then 
+					card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+1 Tarot'}, colour = G.C.SECONDARY_SET.Tarot, delay = 0.45})
+					G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
+						card:juice_up(0.3, 0.5)
+						SMODS.add_card({ set = 'Tarot' })
+						play_sound('timpani')
+					return true end})) 
+				elseif choice == 2 then 
+					card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+1 Planet'}, colour = G.C.SECONDARY_SET.Planet, delay = 0.45})
+					G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
+						card:juice_up(0.3, 0.5)
+						SMODS.add_card({ set = 'Planet' })
+						play_sound('timpani')
+					return true end})) 
+				elseif choice == 3 then 
+					card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+0.1 Interest'}, colour = G.C.MONEY, delay = 0.45})
+					may.ease_interest(-1, 0.5)
+					G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
+						card:juice_up(0.3, 0.5)
+					return true end}))
+				elseif choice == 4 then 
+					card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+1 Tag'}, colour = G.C.FILTER, delay = 0.45})
+					may.random_tag()
+					G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
+						play_sound('tarot1')
+						card:juice_up(0.3, 0.5)
+					return true end}))
+				else
+					card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+1 Consumable Slot'}, colour = G.C.FILTER, delay = 0.45})
+					G.consumeables:change_size(1)
+					G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
+						card:juice_up(0.3, 0.5)
+					return true end}))
+				end
 			end
 		end
 		for k, v in pairs(targets) do 

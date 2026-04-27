@@ -117,14 +117,13 @@ SMODS.Joker {
 			{
 				"If Blind was {C:attention}beaten{} on your {C:attention}last{} hand,",
 				"{C:green}#1# in #2#{} chance to increase {C:dark_edition}Score Operator{}",
-				"level by {C:attention}#3#{}",
-				"{C:mult}Only works once{}", 
+				"level by {C:attention}#3#{} for the {C:attention}next{} round",
 				"{X:attention,C:white}X#4#{} Blind Size",
 			},
 			may.add_fusion_text('Universal Collapse', 'Party Time', may.get_condition('party_time'))
 		}
 	},
-	config = { extra = { odds = 20, mod = 1, blindmult = 4, active = false } },
+	config = { extra = { odds = 10, mod = 1, blindmult = 10, active = false } },
 	pos = { x = 1, y = 7 },
 	cost = 14,
 	rarity = may.epic_key,
@@ -132,7 +131,7 @@ SMODS.Joker {
     endless = true,
 	discovered = true,
 	blueprint_compat = false,
-	demicoloncompat = true,
+	demicoloncompat = false,
 	atlas = 'joker1',
 	loc_vars = function(self, info_queue, card)
         return {vars = { (G.GAME.probabilities.normal or 1), card.ability.extra.odds, card.ability.extra.mod, card.ability.extra.blindmult }}
@@ -152,22 +151,13 @@ SMODS.Joker {
     calculate = function(self, card, context)
 		if context.end_of_round and context.cardarea == G.jokers and (G.GAME.current_round.hands_left == 0 or #SMODS.find_card('j_cry_panopticon') ~= 0) and not context.blueprint then
 			if pseudorandom('may_daredevil') < G.GAME.probabilities.normal / card.ability.extra.odds then
-				if not card.ability.extra.active then
-					card.ability.extra.active = true
-					change_operator(card.ability.extra.mod)
-					return {
-						message = 'Upgraded!',
-						card = card
-					}
-				end
+				change_operator(card.ability.extra.mod)
+				G.GAME.may_daredevil_active = (G.GAME.may_daredevil_active or 0) + 1
+				return {
+					message = 'Upgraded!',
+					card = card
+				}
 			end
-		end
-		if context.forcetrigger then
-			change_operator(card.ability.extra.mod)
-			return {
-				message = 'Upgraded!',
-				card = card
-			}
 		end
 	end,
     in_pool = function(self, args)
@@ -185,7 +175,7 @@ SMODS.Joker {
 			"{C:inactive}{X:mult,C:white}X#3#{} {C:inactive}Mult in total{}"
 		}
 	},
-	config = { extra = { Xmult = 0.2, Xmult_gain = 0.05,  } },
+	config = { extra = { Xmult = 0.3, Xmult_gain = 0.1,  } },
 	rarity = may.epic_key,
 	atlas = 'joker1',
 	blueprint_compat = true,
@@ -360,6 +350,208 @@ SMODS.Joker {
 				colour = G.C.RED,
 				card = context.other_card,	
 			}
+		end
+	end
+}
+
+SMODS.Joker {
+	key = 'schematicum',
+	loc_txt = {
+		name = 'Schematicum',
+		text = {
+			{
+				"{C:attention}Retrigger{} adjacent copies of", 
+				"{C:attention}Blueprint{} and {C:attention}Brainstorm #1#{} time",
+			},
+			{
+				"{C:inactive,E:1}Art by FirstTry{}"
+			}
+		}
+	},
+	config = { extra = { retrigger = 1 } },
+	pos = { x = 6, y = 1 },
+	cost = 25,
+	rarity = may.epic_key,
+	atlas = 'joker2',
+	blueprint_compat = false,
+	demicoloncompat = false,
+    loc_vars = function(self, info_queue, card)
+		info_queue[#info_queue + 1] = G.P_CENTERS.j_blueprint
+		info_queue[#info_queue + 1] = G.P_CENTERS.j_brainstorm
+		return { vars = { card.ability.extra.retrigger } }
+    end,
+    calculate = function(self, card, context)
+		if context.retrigger_joker_check and not context.retrigger_joker then
+			local left 
+			local right
+			for i = 1, #G.jokers.cards do 
+				if G.jokers.cards[i] == card then
+					if G.jokers.cards[i + 1] then
+						right = G.jokers.cards[i + 1]
+					end
+				    if G.jokers.cards[i - 1] then
+						left = G.jokers.cards[i - 1]
+					end
+				end
+			end
+			if context.other_card and context.other_card.gc and (context.other_card:gc().key == 'j_blueprint' or context.other_card:gc().key == 'j_brainstorm') then
+				if context.other_card == right or context.other_card == left then
+				    return {
+					    repetitions = card.ability.extra.retrigger,
+					    message = localize('k_again_ex'),
+					    card = card
+				    }
+				end
+			end
+		end
+	end
+}
+
+SMODS.Joker {
+	key = 'anniversary_cake',
+	loc_txt = {
+		name = 'Anniversary Cake',
+		text = {
+			{
+                "At the {C:attention}end of round{}, if a {B:1,C:white}#1#{} {C:attention}Joker{} is owned,", 
+				"this Joker {C:green}creates{} another random {B:1,C:white}#1#{} {C:attention}Joker{}", 
+				"and {C:green}upgrades{} the listed {C:attention}rarities{},", 
+				"{C:mult}otherwise{} it will {C:mult}self destruct{}", 
+				may.pager(), 
+                "When this Joker {C:green}creates{} a {X:legendary,C:white}Legendary{} {C:attention}Joker{},", 
+				"it {C:mult}self destructs{} and creates", 
+				"{C:attention}#2#{} random {C:dark_edition}Negative{} {C:attention}consumables{}", 
+				may.pager(), 
+                "{C:inactive}Does not require room, excludes self{}", 
+                "{C:inactive}Common -> Uncommon -> Rare -> Epic -> Legendary{}", 
+			},
+			{
+				"{C:inactive,E:1}Art by 2Much{}"
+			}
+		}
+	},
+	config = { extra = { consumables = 10, rarity = 1 } },
+	pos = { x = 1, y = 7 },
+	cost = 20,
+	rarity = may.epic_key,
+	atlas = 'joker2',
+	blueprint_compat = false,
+	demicoloncompat = false,
+	pools = { Food = true },
+    loc_vars = function(self, info_queue, card)
+		local rarities = {'Common', 'Uncommon', 'Rare', 'Epic', 'Legendary'}
+		local colors = {'Common', 'Uncommon', 'Rare', may.epic_key, 'Legendary'}
+		info_queue[#info_queue + 1] = { key = "e_negative_consumable", set = "Edition", config = { extra = 1 } }
+		return { vars = { rarities[card.ability.extra.rarity], card.ability.extra.consumables, colours = { G.C.RARITY[colors[card.ability.extra.rarity]] } } }
+    end,
+	add_to_deck = function(self, card, from_debuff)
+		if not from_debuff then
+			G.E_MANAGER:add_event(Event({func = function()
+				play_sound('may_cake_spawn')
+			return true end})) 
+		end
+	end, 
+    calculate = function(self, card, context)
+		if context.end_of_round and context.game_over == false and context.main_eval then
+			local rarities = {1, 2, 3, may.epic_key, 4}
+			local found
+			for k, v in pairs(G.jokers.cards) do 
+				if v ~= card and v:gc().rarity == rarities[card.ability.extra.rarity] then
+					found = true 
+					break
+				end
+			end
+			if found then
+				local rarity_amounts = { 0.01, 0.8, 1, may.epic_key, nope }
+				G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, func = function()
+					local card2 = create_card('Joker', G.jokers, card.ability.extra.rarity == 5, rarity_amounts[card.ability.extra.rarity], nil, true, nil, 'anniversary_cake')
+					G.jokers:emplace(card2)
+					card2:add_to_deck()
+					card2:juice_up(0.5, 0.3)
+					if card.ability.extra.rarity == 5 then 
+						play_sound('may_bundle')
+						for i = 1, card.ability.extra.consumables do
+							local card3 = create_card('Consumable', G.consumeables, nil, nil, nil, true, may.random_consumable('may_anniversary_cake', nil, nil, G.P_CENTER_POOLS.Consumeable, true).key, 'anniversary_cake')
+							card3:set_edition({negative = true}, false, false)
+							G.consumeables:emplace(card3)
+							card3:add_to_deck()
+						end
+						card:start_dissolve()
+					end
+					card.ability.extra.rarity = card.ability.extra.rarity + 1
+					G.ROOM.jiggle = G.ROOM.jiggle + 1
+				return true end}))
+				if context.rarity ~= 5 then
+					card_eval_status_text(card, 'extra', nil, nil, nil, { message = "Happy Birthday!", colour = may.C.score, delay = 0.45, sound = 'may_cake_activate'})
+				end
+			else
+                G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, func = function()
+					play_sound('may_cake_destroy')
+					card:start_dissolve()
+					G.ROOM.jiggle = G.ROOM.jiggle + 1
+				return true end}))			
+			end
+		end
+	end
+}
+
+SMODS.Joker {
+	key = 'kratos_verde',
+	loc_txt = {
+		name = 'Kratos Verde',
+		text = {
+			{
+				"Played {C:attention}cards{} give {X:chips,C:white}+X#1#{} Chips",
+				"per {C:attention}condition{} below that is {C:green}satisfied{}:",
+				may.pager(),
+				"Card has {C:dark_edition}Lime Seal{}, {C:dark_edition}Radioactive Edition{},",
+				"{C:clubs}Clubs{} suit, {C:dark_edition}Super Mult{}/{C:dark_edition}Grid{}/{C:dark_edition}Overgrown{} Enhancement",
+				may.pager(),
+				"{C:inactive}Base of X1{}",
+				may.pager(),
+				"{C:inactive,E:1,s:0.7}kratos verde{}"
+			},
+			{
+				"{C:inactive,E:1}Original idea by roland_shelby{}",
+			}
+		}
+	},
+	config = { extra = { x_chips = 0.25 } },
+	rarity = may.epic_key,
+	atlas = 'joker2',
+	blueprint_compat = true,
+	demicoloncompat = true,
+	misc_badge = may_sly25_kratos_verde,
+	pos = { x = 8, y = 6 },
+	cost = 12,
+	loc_vars = function(self, info_queue, card)
+		for k, v in pairs({'e_may_radioactive', 'm_may_super_mult', 'm_may_grid', 'm_may_overgrown'}) do
+			info_queue[#info_queue + 1] = G.P_CENTERS[v]
+		end
+		info_queue[#info_queue + 1] = SMODS.Seals['may_lime_seal']
+		return { vars = { card.ability.extra.x_chips } }
+	end,
+	calculate = function(self, card, context) 
+		if context.individual and context.cardarea == G.play then
+			local num = 0
+			if SMODS.has_enhancement(context.other_card, 'm_may_super_mult') or SMODS.has_enhancement(context.other_card, 'm_may_overgrown') or SMODS.has_enhancement(context.other_card, 'm_may_grid') then
+				num = num + 1
+			end
+			if (context.other_card.seal or '') == 'may_lime_seal' then
+				num = num + 1
+			end
+			if context.other_card.edition and context.other_card.edition.key == 'e_may_radioactive' then
+				num = num + 1
+			end
+			if context.other_card:is_suit('Clubs') then
+				num = num + 1
+			end
+			if num ~= 0 then
+				return {
+					x_chips = 1 + (card.ability.extra.x_chips * num),
+					message_card = card
+				}
+			end
 		end
 	end
 }

@@ -126,7 +126,7 @@ SMODS.Joker {
             {
 			    "{X:mult,C:white}^#1#{} Mult if played",
 			    "hand is {C:attention}Royal Flush{}",
-			    "{C:attention}otherwise{}, {C:mult}destroy{} all scoring {C:attention}cards{}",
+			    "{C:attention}otherwise{} hand will {C:mult}not score{}",
             }, 
             {
 			    "{C:inactive,E:1}Art by _TeKKen_{}"
@@ -139,13 +139,14 @@ SMODS.Joker {
 	blueprint_compat = true,
 	demicoloncompat = true,
 	immutable = true,
+	endless = true,
 	cost = 6,
 	config = { extra = { Emult = 1.5 } },
 	loc_vars = function(self, info_queue, card)
 		return { vars = { card.ability.extra.Emult } }
 	end,
 	calculate = function(self, card, context)
-		if context.joker_main and next(context.poker_hands['may_Royal Flush']) then
+		if (context.joker_main and next(context.poker_hands['may_Royal Flush'])) or context.forcetrigger then
 			return {
 				Emult_mod = card.ability.extra.Emult,
 				card = card,
@@ -153,20 +154,17 @@ SMODS.Joker {
 				colour = G.C.MULT
 			}
 		end
-		if context.destroying_card then
-			if not next(context.poker_hands['may_Royal Flush']) then
-				return {remove = not context.destroying_card.ability.eternal}
-			end
-		end
-		if context.forcetrigger then
+		if context.debuff_hand and context.scoring_name ~= 'may_Royal Flush' then
 			return {
-				Emult_mod = card.ability.extra.Emult,
-				card = card,
-				message = '^'..card.ability.extra.Emult..' Mult',
-				colour = G.C.MULT
+				debuff = true, 
+				debuff_text = 'Lil\' Princed!', 
+				debuff_source = card
 			}
 		end
-	end
+	end, 
+    in_pool = function(self, args)
+        return G.GAME.may_endless_mode, { allow_duplicates = false }
+    end
 }
 
 SMODS.Joker {
@@ -230,6 +228,7 @@ SMODS.Joker {
 	pos = { x = 5, y = 17 },
 	cost = 6,
 	loc_vars = function(self, info_queue, card)
+		info_queue[#info_queue + 1] = G.P_CENTERS.m_steel
 		return { vars = { card.ability.extra.Xmult } }
 	end,
 	calculate = function(self, card, context)
@@ -652,11 +651,11 @@ SMODS.Joker {
 			G.E_MANAGER:add_event(Event({ func = function()
 				card:juice_up(0.5, 0.5)
 				local wheel = create_card('Tarot', G.consumeables, nil, nil, nil, nil, 'c_wheel_of_fortune', nil)
-				G.consumeables:emplace(wheel)
                 wheel:setQty(math.ceil(card.ability.extra.cards))
 				wheel:add_to_deck()
                 wheel.sell_cost = 0
                 wheel:set_edition('e_negative')
+				G.consumeables:emplace(wheel)
                 play_sound('timpani')
 			return true end}))
 		end
@@ -791,8 +790,7 @@ SMODS.Joker {
 		text = {
             "Before scoring, all {C:attention}held copies{} of", 
             "the {C:planet}Planet Card{} corresponding to {C:attention}played{} {C:purple}Poker Hand{}",
-            "level up{} {C:attention}all{} other {C:purple}Poker Hands{}", 
-            "by {C:attention}#1#{}", 
+            "level up{} {C:attention}all{} other {C:purple}Poker Hands{} by {C:attention}#1#{}", 
             "{C:inactive,E:1,s:0.7}\"Felush Euie\"???{}"
 		}
 	},
@@ -851,7 +849,7 @@ SMODS.Joker {
 		text = {
 			{
 				"If played hand has {C:attention}3 or less{} cards,",
-				"played {C:attention}Hearts{} have a {C:green}#1# in #2#{} chance",
+				"played {C:hearts}Hearts{} have a {C:green}#1# in #2#{} chance",
 				"to give {X:mult,C:white}^#3#{} Mult",
 			},
 			{
@@ -868,6 +866,7 @@ SMODS.Joker {
 	discovered = true,
 	blueprint_compat = true,
 	demicoloncompat = true,
+	endless = true,
 	atlas = 'joker1',
 	loc_vars = function(self, info_queue, card)
         return {vars = { (G.GAME.probabilities.normal or 1), card.ability.extra.odds, card.ability.extra.Emult }}
@@ -895,7 +894,10 @@ SMODS.Joker {
 				colour = G.C.RED
 			}
 		end
-	end
+	end, 
+	in_pool = function(self, args)
+        return G.GAME.may_endless_mode, { allow_duplicates = false }
+    end
 }
 
 SMODS.Joker {
@@ -905,7 +907,7 @@ SMODS.Joker {
 		text = {
 			{
 				"If {C:attention}Joker Slots{} are {C:attention}fully occupied{},",
-				"played {C:attention}Diamonds{} have a {C:green}#1# in #2#{} chance",
+				"played {C:diamonds}Diamonds{} have a {C:green}#1# in #2#{} chance",
 				"to give {C:money}$#3#{}",
 			},
 			{
@@ -953,7 +955,7 @@ SMODS.Joker {
 		name = 'Soy Sauce',
 		text = {
 			{
-				"Played {C:attention}Spades{} have a {C:green}#1# in #2#{} chance",
+				"Played {C:spades}Spades{} have a {C:green}#1# in #2#{} chance",
 				"to give {C:attention}+#3# Hand Size{} for this round",
 				"if you currently have {C:attention}more{} {C:mult}Mult{} {C:attention}than{} {C:chips}Chips{}",
 			},
@@ -1004,7 +1006,7 @@ SMODS.Joker {
 		name = 'Pesto',
 		text = {
 			{
-				"Played {C:attention}Clubs{} have a {C:green}#1# in #2#{} chance",
+				"Played {C:clubs}Clubs{} have a {C:green}#1# in #2#{} chance",
 				"to give {C:attention}+#3# Card Selection Limit{}",
 				"if {C:attention}Hand Size{} is {C:attention}bigger{} than {X:attention,C:white}X#4#{} {C:attention}Card Selection Limit{}",
 			},
