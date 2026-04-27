@@ -257,11 +257,11 @@ SMODS.Enhancement {
 				end
 			end
 			if left then
-				left.ability.perma_dollars = (left.ability.perma_dollars or 0) + 2 * (SMODS.has_enhancement(left, 'm_may_crystal') and 2 or 1)
+				left.ability.perma_p_dollars = (left.ability.perma_p_dollars or 0) + 2 * (SMODS.has_enhancement(left, 'm_may_crystal') and 2 or 1)
 				card_eval_status_text(left, 'extra', nil, nil, nil, { message = 'Upgraded!', colour = G.C.MONEY, delay = 0.45, sound = 'may_permabonus' })
 			end
 			if right then
-				right.ability.perma_dollars = (right.ability.perma_dollars or 0) + 2 * (SMODS.has_enhancement(right, 'm_may_crystal') and 2 or 1)
+				right.ability.perma_p_dollars = (right.ability.perma_p_dollars or 0) + 2 * (SMODS.has_enhancement(right, 'm_may_crystal') and 2 or 1)
 				card_eval_status_text(right, 'extra', nil, nil, nil, { message = 'Upgraded!', colour = G.C.MONEY, delay = 0.45, sound = 'may_permabonus' })
 			end
 		end
