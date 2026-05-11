@@ -39,7 +39,7 @@ SMODS.Consumable {
 		return { vars = { card.ability.extra.jokers, ((G.GAME.may_retro_stats or {}).easter_egg or 2), card.ability.extra.mul, may.ctu('yottacards'), (((G.GAME.may_retro_stats or {}).easter_egg or 2) >= 90 and 'Active!' or 'Inactive'), colours = { G.C[((G.GAME.may_retro_stats or {}).easter_egg or 2) >= 90 and 'GREEN' or 'RED'] } } }
 	end,
 	use = function(self, card, area, copier)
-		if G.GAME.may_retro_stats.easter_egg < 90 then
+		if (G.GAME.may_retro_stats.easter_egg or 0) < 90 then
 			for i = 1, math.min(card.ability.extra.jokers, G.jokers.config.card_limit - #G.jokers.cards) do
 				G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
 					if G.jokers.config.card_limit > #G.jokers.cards then
@@ -283,7 +283,7 @@ SMODS.Consumable {
 	discovered = true,
 	atlas = 'retro',
 	can_use = function(self, card)
-		return may.canuse() and G.GAME.may_last_consumable_sold and (G.GAME.may_last_consumable_sold ~= 'c_may_savescum') and (G.GAME.may_packs_skipped or 0) > ((G.GAME.may_retro_stats or {}).savescum or 5)
+		return may.canuse() and G.GAME.may_last_consumable_sold and (G.GAME.may_last_consumable_sold ~= 'c_may_savescum') and (G.GAME.may_packs_skipped or 0) >= ((G.GAME.may_retro_stats or {}).savescum or 5)
 	end,
 	loc_vars = function(self, info_queue, card)
 		local fool_c = G.GAME.may_last_consumable_sold and G.P_CENTERS[G.GAME.may_last_consumable_sold] or nil
@@ -537,7 +537,7 @@ SMODS.Consumable {
 			end
 		return true end}))
 		G.GAME.may_retro_stats = G.GAME.may_retro_stats or {}
-		G.GAME.may_retro_stats.sacescum = math.ceil((G.GAME.may_retro_stats.bossfight or 4) * card.ability.extra.mul)
+		G.GAME.may_retro_stats.bossfight = math.ceil((G.GAME.may_retro_stats.bossfight or 4) * card.ability.extra.mul)
 		card_eval_status_text(card, 'extra', nil, nil, nil, { message = "Increased!", colour = G.C.SECONDARY_SET.retrocards, delay = 0.45, sound = 'may_forcetrigger'})
 	end,
 }

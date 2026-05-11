@@ -935,7 +935,7 @@ end
 
 -- Gets the Nominal Chips of a playing card
 function Card:may_get_nominal_chips()
-    return (not SMODS.has_no_rank(self)) and self.base.nominal * (G.GAME.playing_card_multiplier or 1) * (self.ability.nominal_multiplier or 1)
+    return (SMODS.has_no_rank(self) and 0) or self.base.nominal * (G.GAME.playing_card_multiplier or 1) * (self.ability.nominal_multiplier or 1)
 end
 
 -- Plays the composite gong sound, like when balancing with Plasma Deck
