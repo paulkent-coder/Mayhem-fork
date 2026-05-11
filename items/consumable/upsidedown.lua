@@ -645,7 +645,7 @@ SMODS.Consumable {
 			G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.1, func = function() 
 				play_sound('may_permabonus', percent)
 				targets[i]:juice_up(0.3, 0.3)
-				targets[i].ability.perma_mult = (targets[i].ability.perma_mult or 0) + card.ability.extra.bonus
+				targets[i].ability.perma_bonus = (targets[i].ability.perma_bonus or 0) + card.ability.extra.bonus
 			return true end}))
 		end
 		for i=1, #targets, 1 do
@@ -973,7 +973,7 @@ SMODS.Consumable {
 		}
 	},
 	pos = { x = 4, y = 4 },
-	config = { extra = { bonus = 5, target_enhancement = 'm_gold' } },
+	config = { extra = { bonus = 0.3, target_enhancement = 'm_gold' } },
 	atlas = 'upside_down',
 	cost = 10,
 	unlocked = true,

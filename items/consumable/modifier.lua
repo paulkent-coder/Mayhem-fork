@@ -412,12 +412,12 @@ SMODS.Consumable {
 			local fails = 0
 			for i=1, number do 
 				if SMODS.pseudorandom_probability(card, "may_glass_card", G.GAME.probabilities.normal, card.ability.extra.odds, "Glass Card") then 
-					successes = successes + 1
-				else 
 					fails = fails + 1
+				else 
+					successes = successes + 1
 				end 
 			end
-			local total = (card.ability.extra.x_mult1 ^ fails) * (card.ability.extra.x_mult2 ^ fails)
+			local total = (card.ability.extra.x_mult1 ^ successes) * (card.ability.extra.x_mult2 ^ fails)
 			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'X'..total}, colour = G.C.MULT, delay = 0.45})
 			may.hand_multchips_all(v, nil, false, nil, {0, total})
 		end
@@ -442,7 +442,7 @@ SMODS.Consumable {
 				"Each {C:dark_edition}Steel Card{}", 
 				"{C:attention}held in hand{} gives", 
 				"{X:mult,C:white}X#1#{} {C:may_ethereal}Level{} Mult to {C:attention}all{} {C:purple}Poker Hands{}", 
-				"{C:inactive}Currently{} {X:mult,C:white}X#1#{} {C:may_ethereal}Level{} {C:inactive}Mult{}"
+				"{C:inactive}Currently{} {X:mult,C:white}X#2#{} {C:may_ethereal}Level{} {C:inactive}Mult{}"
 			}, 
 			{
 				"{C:inactive,E:1}Art by Superb Thing{}"
@@ -627,6 +627,7 @@ SMODS.Consumable {
 			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..(card.ability.extra.chips*number)}, colour = G.C.CHIPS, delay = 0.45})
 			may.hand_multchips_all(v, may.favhand(), false, {-1, card.ability.extra.chips * number})
 		end
+		may.ch()
 		for k, v in pairs(targets) do 
 			local percent = 1.15 - (k-0.999)/(#targets-0.998)*0.3
 			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
@@ -855,7 +856,7 @@ SMODS.Consumable {
 			else 
 				if mult > 0 then 
 					card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..mult}, colour = G.C.MULT, delay = 0.45})
-					may.hand_multchips_all(v, nil, false, nil, {-1, card.ability.extra.nult})
+					may.hand_multchips_all(v, nil, false, nil, {-1, mult})
 				end 
 				if dollars > 0 then
 					card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..dollars}, colour = G.C.MONEY, delay = 0.45})
@@ -963,7 +964,7 @@ SMODS.Consumable {
 		end
 		for k, v in pairs(targets) do 
 			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'X'..card.ability.extra.x_mult ^ number}, colour = G.C.MULT, delay = 0.45})
-			may.hand_multchips_all(v, nil, false, nil, {0, card.ability.extra.x_mult})
+			may.hand_multchips_all(v, nil, false, nil, {0, card.ability.extra.x_mult ^ number})
 		end
 		may.ch()
 		for k, v in pairs(targets) do 
@@ -2788,7 +2789,7 @@ SMODS.Consumable {
 			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..card.ability.extra.bonus1 * amount}, colour = G.C.MULT, delay = 0.45})
 			for k2, v2 in pairs(G.playing_cards) do
 				if not table_hasvalue(targets, v2) then 
-					v2.ability.perma_mult = (v2.ability.perma_mult or 0) + card.ability.extra.bonus1
+					v2.ability.perma_mult = (v2.ability.perma_mult or 0) + card.ability.extra.bonus1 * amount
 					if v2.area ~= G.deck and v2.area ~= G.discard then
 						G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
 							v2:juice_up(0.3, 0.5)
@@ -2800,7 +2801,7 @@ SMODS.Consumable {
 			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..card.ability.extra.bonus2 * amount}, colour = G.C.CHIPS, delay = 0.45})
 			for k2, v2 in pairs(G.playing_cards) do
 				if not table_hasvalue(targets, v2) then 
-					v2.ability.perma_bonus = (v2.ability.perma_bonus or 0) + card.ability.extra.bonus2
+					v2.ability.perma_bonus = (v2.ability.perma_bonus or 0) + card.ability.extra.bonus2 * amount
 					if v2.area ~= G.deck and v2.area ~= G.discard then
 						G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
 							v2:juice_up(0.3, 0.5)
@@ -2825,11 +2826,11 @@ SMODS.Consumable {
 				table.insert(targets, v)
 			end
 		end
-		local amount2 = 0
+		local amount = 0
 		if G.playing_cards then 
 			for k, v in pairs(G.playing_cards) do
 				if v.edition and v.edition.key == 'e_may_laminated' then 
-					amount2 = amount2 + 1
+					amount = amount + 1
 				end 
 			end 
 		end
@@ -3096,7 +3097,7 @@ SMODS.Consumable {
 			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..card.ability.extra.bonus1..'$'}, colour = G.C.MONEY, delay = 0.45})
 			for k2, v2 in pairs(G.playing_cards) do
 				if not table_hasvalue(targets, v2) then 
-					v2.ability.perma_dollars = (v2.ability.perma_dollars or 0) + card.ability.extra.bonus1
+					v2.ability.perma_p_dollars = (v2.ability.perma_p_dollars or 0) + card.ability.extra.bonus1
 					if v2.area ~= G.deck and v2.area ~= G.discard then
 						G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
 							v2:juice_up(0.3, 0.5)
@@ -3129,10 +3130,10 @@ SMODS.Consumable {
 			return true end})) 
 		end
 		for k, v in pairs(targets) do 
-			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..(card.ability.extra.perma_dollars * number)..'$'}, colour = G.C.MONEY, delay = 0.45})
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..(card.ability.extra.bonus1 * number)..'$'}, colour = G.C.MONEY, delay = 0.45})
 			for k2, v2 in pairs(G.playing_cards) do
 				if not table_hasvalue(targets, v2) then 
-					v2.ability.perma_dollars = (v2.ability.perma_dollars or 0) + (card.ability.extra.perma_dollars * number)
+					v2.ability.perma_p_dollars = (v2.ability.perma_p_dollars or 0) + (card.ability.extra.bonus1 * number)
 					if v2.area ~= G.deck and v2.area ~= G.discard then
 						G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
 							v2:juice_up(0.3, 0.5)
@@ -3234,11 +3235,29 @@ SMODS.Consumable {
 				play_sound('card1', percent)
 			return true end})) 
 		end
+		local amount2 = 0
+		if G.hand then
+			for k, v in ipairs(G.jokers.cards) do
+				if v.edition then
+					amount2 = amount2 + 1
+				end
+			end
+			for k, v in ipairs(G.consumeables.cards) do
+				if v.edition then
+					amount2 = amount2 + 1
+				end
+			end
+			for k, v in ipairs(G.playing_cards) do
+				if v.edition then
+					amount2 = amount2 + 1
+				end
+			end
+		end
 		for k, v in pairs(targets) do 
 			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..card.ability.extra.bonus1 * amount2..'$'}, colour = G.C.MONEY, delay = 0.45})
 			for k2, v2 in pairs(G.playing_cards) do
 				if not table_hasvalue(targets, v2) then 
-					v2.ability.perma_dollars = (v2.ability.perma_dollars or 0) + (card.ability.extra.bonus1 * amount2)
+					v2.ability.perma_p_dollars = (v2.ability.perma_p_dollars or 0) + (card.ability.extra.bonus1 * amount2)
 					if v2.area ~= G.deck and v2.area ~= G.discard then
 						G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
 							v2:juice_up(0.3, 0.5)
@@ -3263,6 +3282,24 @@ SMODS.Consumable {
 				table.insert(targets, v)
 			end
 		end
+		local amount2 = 0
+		if G.hand then
+			for k, v in ipairs(G.jokers.cards) do
+				if v.edition then
+					amount2 = amount2 + 1
+				end
+			end
+			for k, v in ipairs(G.consumeables.cards) do
+				if v.edition then
+					amount2 = amount2 + 1
+				end
+			end
+			for k, v in ipairs(G.playing_cards) do
+				if v.edition then
+					amount2 = amount2 + 1
+				end
+			end
+		end
 		for k, v in pairs(targets) do 
 			local percent = 0.85 + (k-0.999)/(#targets-0.998)*0.3
 			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
@@ -3271,10 +3308,10 @@ SMODS.Consumable {
 			return true end})) 
 		end
 		for k, v in pairs(targets) do 
-			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..(card.ability.extra.perma_dollars * number * amount2)..'$'}, colour = G.C.MONEY, delay = 0.45})
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..(card.ability.extra.bonus1 * number * amount2)..'$'}, colour = G.C.MONEY, delay = 0.45})
 			for k2, v2 in pairs(G.playing_cards) do
 				if not table_hasvalue(targets, v2) then 
-					v2.ability.perma_dollars = (v2.ability.perma_dollars or 0) + (card.ability.extra.perma_dollars * number * amount2)
+					v2.ability.perma_p_dollars = (v2.ability.perma_p_dollars or 0) + (card.ability.extra.bonus1 * number * amount2)
 					if v2.area ~= G.deck and v2.area ~= G.discard then
 						G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
 							v2:juice_up(0.3, 0.5)
