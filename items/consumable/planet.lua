@@ -440,6 +440,7 @@ SMODS.Consumable {
 				play_sound('card1')
 			return true end}))
 		end
+		playing_card_joker_effects(created)
 	end,
 	bulk_use = function(self, card, area, copier, number)
 		local planet = may.planethand(may.favhand()) or 'c_may_tartarus'
@@ -486,6 +487,7 @@ SMODS.Consumable {
 				play_sound('card1')
 			return true end}))
 		end
+		playing_card_joker_effects(created)
 	end
 }
 
@@ -538,6 +540,7 @@ SMODS.Consumable {
 				end
 			end
 		return true end}))
+		playing_card_joker_effects(created)
 		may.ch()
 	end,
 	bulk_use = function(self, card, area, copier, number)
@@ -564,6 +567,7 @@ SMODS.Consumable {
 				end
 			end
 		return true end}))
+		playing_card_joker_effects(created)
 		may.ch()
 	end
 }

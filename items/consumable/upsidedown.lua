@@ -850,10 +850,12 @@ SMODS.Consumable {
 		return may.canuse() and #G.hand.highlighted ~= 0
 	end,
 	use = function(self, card, area, copier)
+		new_cards = {}
 		for k, v in pairs(G.hand.highlighted) do
 			G.playing_card = (G.playing_card and G.playing_card + 1) or 1
 			local _card = copy_card(v, nil, nil, G.playing_card)
 			_card:add_to_deck()
+			table.insert(new_cards, _card)
 			G.deck.config.card_limit = G.deck.config.card_limit + 1
 			table.insert(G.playing_cards, _card)
 			G.hand:emplace(_card)
@@ -1855,7 +1857,7 @@ SMODS.Consumable {
 			return true end}))
 		end
 		for k, v in ipairs(G.hand.cards) do
-			local percent = 0.85 + (k - 0.999) / (#targets - 0.998) * 0.3
+			local percent = 0.85 + (k - 0.999) / (#G.hand.cards - 0.998) * 0.3
 			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
 				v:set_ability(pseudorandom_element(enhance, pseudoseed('may_talisman_upsd')), false, false) 
 				v:flip()
@@ -2166,10 +2168,12 @@ SMODS.Consumable {
 		return { vars = { may.favhand() } }
 	end,
 	use = function(self, card, area, copier)
+		new_cards = {}
 		for k, v in pairs(G.hand.highlighted) do
 			G.playing_card = (G.playing_card and G.playing_card + 1) or 1
 			local _card = copy_card(v, nil, nil, G.playing_card)
 			_card:add_to_deck()
+			table.insert(new_cards, _card)
 			G.deck.config.card_limit = G.deck.config.card_limit + 1
 			table.insert(G.playing_cards, _card)
 			G.hand:emplace(_card)
