@@ -423,11 +423,11 @@ SMODS.Consumable {
 
 SMODS.Consumable {
 	key = 'wrong_warp',
-	config = { extra = { tags = 5, mul = 1.3 } },
+	config = { extra = { ante = -1, mul = 1.3 } },
 	loc_txt = {
 		name = 'WRONG_WARP',
 		text = {
-			"Create {C:attention}#1# random Tags{}",
+			"{C:attention}#1# Ante{}",
 			"if you have {C:attention}skipped #2#{} Blinds,", 
 			"then {C:attention}increase{} {C:mult}requirement{} by {X:retrocards,C:white}X#3#{}", 
 			may.pager(55),
@@ -446,14 +446,11 @@ SMODS.Consumable {
 		return may.canuse() and G.GAME.skips >= ((G.GAME.may_retro_stats or {}).wrong_warp or 3)
 	end,
 	loc_vars = function(self, info_queue, card)
-		return { vars = { card.ability.extra.tags, ((G.GAME.may_retro_stats or {}).wrong_warp or 3), card.ability.extra.mul, G.GAME.skips } }
+		return { vars = { card.ability.extra.ante, ((G.GAME.may_retro_stats or {}).wrong_warp or 3), card.ability.extra.mul, G.GAME.skips } }
 	end,
 	use = function(self, card, area, copier)
 		G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
-			play_sound('may_bundle')
-			for i = 1, card.ability.extra.tags do
-				may.random_tag()
-			end
+			ease_ante(card.ability.extra.ante)
 			card:juice_up(0.3, 0.5)
 		return true end}))
 		G.GAME.may_retro_stats = G.GAME.may_retro_stats or {}
