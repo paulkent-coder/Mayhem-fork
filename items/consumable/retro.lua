@@ -415,6 +415,7 @@ SMODS.Consumable {
 				play_sound('card1')
 			return true end})) 
 		end
+		playing_card_joker_effects(created)
 		G.GAME.may_retro_stats = G.GAME.may_retro_stats or {}
 		G.GAME.may_retro_stats.glitch = math.ceil((G.GAME.may_retro_stats.glitch or 5) * card.ability.extra.mul)
 		card_eval_status_text(card, 'extra', nil, nil, nil, { message = "Increased!", colour = G.C.SECONDARY_SET.retrocards, delay = 0.45, sound = 'may_forcetrigger'})
