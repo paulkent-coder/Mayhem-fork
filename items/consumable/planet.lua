@@ -539,8 +539,8 @@ SMODS.Consumable {
 					return true end}))
 				end
 			end
+			playing_card_joker_effects(created)
 		return true end}))
-		playing_card_joker_effects(created)
 		may.ch()
 	end,
 	bulk_use = function(self, card, area, copier, number)
@@ -566,8 +566,8 @@ SMODS.Consumable {
 					return true end}))
 				end
 			end
+			playing_card_joker_effects(created)
 		return true end}))
-		playing_card_joker_effects(created)
 		may.ch()
 	end
 }
