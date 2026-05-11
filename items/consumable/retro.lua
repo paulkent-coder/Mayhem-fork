@@ -39,7 +39,7 @@ SMODS.Consumable {
 		return { vars = { card.ability.extra.jokers, ((G.GAME.may_retro_stats or {}).easter_egg or 2), card.ability.extra.mul, may.ctu('yottacards'), (((G.GAME.may_retro_stats or {}).easter_egg or 2) >= 90 and 'Active!' or 'Inactive'), colours = { G.C[((G.GAME.may_retro_stats or {}).easter_egg or 2) >= 90 and 'GREEN' or 'RED'] } } }
 	end,
 	use = function(self, card, area, copier)
-		if (G.GAME.may_retro_stats.easter_egg or 0) < 90 then
+		if ((G.GAME.may_retro_stats or {}).easter_egg or 0) < 90 then
 			for i = 1, math.min(card.ability.extra.jokers, G.jokers.config.card_limit - #G.jokers.cards) do
 				G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
 					if G.jokers.config.card_limit > #G.jokers.cards then
