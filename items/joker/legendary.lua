@@ -213,7 +213,7 @@ SMODS.Joker {
 					return true end}))
 				end
 			end
-			if SMODS.pseudorandom_probability(card, "may_doggo", (G.GAME.probabilities.normal or 1), card.ability.extra.odds, "DOGGO") then
+			if not context.blueprint and SMODS.pseudorandom_probability(card, "may_doggo", (G.GAME.probabilities.normal or 1), card.ability.extra.odds, "DOGGO") then
 				SMODS.scale_card(card, {
 					ref_table = card.ability.extra,
 					ref_value = "copies",
