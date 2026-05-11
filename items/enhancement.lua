@@ -168,7 +168,7 @@ SMODS.Enhancement {
 	loc_txt = {
 		name = 'Platinum Card',
 		text = {
-			"{X:money,C:white}X1.1${} at the", 
+			"{C:money}+0.1{} Interest at the", 
             "end of round",
             "if {C:attention}held in hand{}",
 		}
@@ -179,12 +179,12 @@ SMODS.Enhancement {
 	weight = 0,
 	discovered = true,
 	atlas = 'enhancement',
+	loc_vars = function(self, info_queue, card)
+		info_queue[#info_queue + 1] = { key = "may_interest_tutorial", set = "Other" }
+	end,
 	calculate = function(self, card, context)
 		if context.playing_card_end_of_round and context.cardarea == G.hand then
-			return {
-				x_dollars = 1.1, 
-                card = card 
-			}
+			may.ease_interest(-1, 0.1)
 		end
 	end,
     in_pool = function(self, args)

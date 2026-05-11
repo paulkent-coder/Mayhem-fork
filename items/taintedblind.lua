@@ -1020,7 +1020,8 @@ SMODS.Blind {
 		name = 'The Gaze',
 		text = { 
 			"Only least played", 
-			"Poker Hand scores",
+			"Poker Hand on blind", 
+			"select scores",
 			"(prioritizes lower", 
 			"scoring hands)"
 		}
@@ -1036,15 +1037,23 @@ SMODS.Blind {
 	pos = {x = 0, y = 15},
 	endless = true, 
 	tainted = true,
+	calculate = function(self, blind, context)
+        if context.setting_blind then
+            G.GAME.may_gaze_hand = lphand()
+		end
+		if context.end_of_round then
+			G.GAME.may_gaze_hand = nil
+		end
+	end, 
     debuff_hand = function(self, cards, hand, handname, check)
-		if handname ~= lphand() then
+		if handname ~= G.GAME.may_gaze_hand then
 			G.GAME.blind.triggered = true
 			return true
 		end
 		return false
 	end,
 	get_loc_debuff_text = function(self)
-		return "Can only play "..localize(lphand(), 'poker_hands')
+		return "Can only play "..localize(G.GAME.may_gaze_hand, 'poker_hands')
 	end,
 	in_pool = function(self, args)
 		return G.GAME.may_endless_mode and G.GAME.bosses_used['bl_eye'] >= 1, { allow_duplicates = true }

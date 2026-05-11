@@ -3797,14 +3797,14 @@ SMODS.Consumable {
 
 SMODS.Consumable {
 	key = 'gold_seal_card',
-	config = { extra = { x_dollars = 1.2, target = 'Gold' } },
+	config = { extra = { interest_cap = 5, target = 'Gold' } },
 	loc_txt = {
 		name = 'Gold Seal Card',
 		text = {
 			{
 				"Each card with {C:dark_edition}Gold Seal{}", 
-				"{C:attention}held in hand{} gives {X:money,C:white}X#1#${}",
-				"{C:inactive}Currently{} {X:money,C:white}X#2#${}",
+				"{C:attention}held in hand{} gives {C:money}+#1#{} Interest Cap",
+				"{C:inactive}Currently{} {C:money}+#2#{} {C:inactive}Interest Cap{}",
 			}, 
 			{
 				"{C:inactive,E:1}Art by Superb Thing{}"
@@ -3829,6 +3829,7 @@ SMODS.Consumable {
 	end,
 	loc_vars = function(self, info_queue, card) 
 		info_queue[#info_queue + 1] = SMODS.Seals[card.ability.extra.target]
+		info_queue[#info_queue + 1] = { key = "may_interest_tutorial", set = "Other" }
 		local amount = 0
 		if G.hand then
 			for k, v in pairs(G.hand.cards) do 
@@ -3837,7 +3838,7 @@ SMODS.Consumable {
 				end
 			end
 		end 
-		return { vars = { card.ability.extra.x_dollars, card.ability.extra.x_dollars ^ amount } }
+		return { vars = { card.ability.extra.interest_cap, card.ability.extra.interest_cap * amount } }
 	end,
 	use = function(self, card, area, copier)
 		local targets = {}
@@ -3854,8 +3855,8 @@ SMODS.Consumable {
 			return true end})) 
 		end
 		for k, v in pairs(targets) do 
-			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'X'..card.ability.extra.x_dollars..'$'}, colour = G.C.MONEY, delay = 0.45})
-			may.hypermoney(0, card.ability.extra.x_dollars)
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..card.ability.extra.interest_cap..' Interest Cap'}, colour = G.C.MONEY, delay = 0.45})
+			may.ease_interest_cap(-1, card.ability.extra.interest_cap)
 		end
 		for k, v in pairs(targets) do 
 			local percent = 1.15 - (k-0.999)/(#targets-0.998)*0.3
@@ -3880,8 +3881,8 @@ SMODS.Consumable {
 			return true end})) 
 		end
 		for k, v in pairs(targets) do 
-			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'X'..(card.ability.extra.x_dollars ^ number)..'$'}, colour = G.C.MONEY, delay = 0.45})
-			may.hypermoney(0, card.ability.extra.x_dollars ^ number)
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..(card.ability.extra.interest_cap * number)..' Interest Cap'}, colour = G.C.MONEY, delay = 0.45})
+			may.ease_interest_cap(-1, card.ability.extra.interest_cap * number)
 		end
 		for k, v in pairs(targets) do 
 			local percent = 1.15 - (k-0.999)/(#targets-0.998)*0.3
@@ -4519,7 +4520,7 @@ SMODS.Consumable {
 		for k, v in pairs(targets) do 
 			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'X'..card.ability.extra.x_level..' Level'}, colour = G.C.SECONDARY_SET.Planet, delay = 0.45})
 			may.level_up_all_hands_hyper(card, false, card.ability.extra.x_level, 0)
-			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'X'..card.ability.extra.dollars..'$'}, colour = G.C.MONEY, delay = 0.45})
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'X'..card.ability.extra.x_dollars..'$'}, colour = G.C.MONEY, delay = 0.45})
 			may.hand_mod_dollars_all(card, false, card.ability.extra.x_dollars, 0)
 		end
 		for k, v in pairs(targets) do 
@@ -4547,7 +4548,7 @@ SMODS.Consumable {
 		for k, v in pairs(targets) do 
 			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'X'..card.ability.extra.x_level ^ number..' Level'}, colour = G.C.SECONDARY_SET.Planet, delay = 0.45})
 			may.level_up_all_hands_hyper(card, false, card.ability.extra.x_level ^ number, 0)
-			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'X'..card.ability.extra.dollars ^ number..'$'}, colour = G.C.MONEY, delay = 0.45})
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'X'..card.ability.extra.x_dollars ^ number..'$'}, colour = G.C.MONEY, delay = 0.45})
 			may.hand_mod_dollars_all(card, false, card.ability.extra.x_dollars ^ number, 0)
 		end
 		for k, v in pairs(targets) do 

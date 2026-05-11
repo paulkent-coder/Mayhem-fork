@@ -227,11 +227,11 @@ function get_blind_amount(ante)
 		    amount = FALLBACK(amount, ante)
 	    end
 		if interdimensional > to_big(0) then
-			amount = to_big(amount):arrow(2, to_big((interdimensional * ((big35 + (to_big(ante) * big0_35)) + big1))))
+			amount = to_big(amount):arrow(2, to_big((interdimensional * ((big20 + (to_big(ante) * big0_3)) + big1))))
 		    amount = FALLBACK(amount, ante)
 	    end
 		if ethereal > to_big(0) then 
-			amount = to_big(amount):arrow(3, to_big((ethereal * ((big50 + (to_big(ante) * big0_5)) + big1))))
+			amount = to_big(amount):arrow(3, to_big((ethereal * ((big35 + (to_big(ante) * big0_35)) + big1))))
 		    amount = FALLBACK(amount, ante)
 	    end
 		if surreal > to_big(0) then 

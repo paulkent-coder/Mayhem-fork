@@ -16,6 +16,8 @@ return {
 	["Fusionmusic"] = true,
 	["Fusionshopmusic"] = true,
 	["Fusionpackmusic"] = true,
+	["Hyperascendantshopmusic"] = true,
+	["Surrealshopmusic"] = true,
 	["TameSounds"] = false,
 	["LegacyTr1"] = false,
 	["CustomHyperoperations"] = true,

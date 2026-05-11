@@ -408,7 +408,7 @@ SMODS.Edition {
 		name = "Hypnotic",
 		label = "Hypnotic",
 		text = {
-			"{C:mult}=Chips^1.5{} Mult",
+			"{C:mult}=(Hand Chips)^1.5{} Mult",
 			" ",
 			"{C:inactive,E:1}Shader by Oiiman{}"
 		}
@@ -425,7 +425,7 @@ SMODS.Edition {
 	calculate = function(self, card, context)
 		if context.pre_joker or (context.main_scoring and context.cardarea == G.play) then
 			return {
-				eq_mult = to_big(hand_chips):arrow(1, 1.5)
+				eq_mult = to_big(G.GAME.hands[context.scoring_name].chips):arrow(1, 1.5)
 			}
 		end
 	end

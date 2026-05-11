@@ -272,6 +272,9 @@ SMODS.Sound({
 	sync = true,
 	pitch = 1,
 	select_music_track = function()
+		if G.GAME and G.GAME.blind and G.GAME.blind.config.blind.tainted and may.conf.Taintedmusic then
+			return false
+		end
 		local found_surreal
 		if G.jokers then
 			for k, v in pairs(G.jokers.cards) do
@@ -280,9 +283,31 @@ SMODS.Sound({
 				end
 			end
 		end
-		return (found_surreal and (may.conf.Surrealmusic and (may.transcendence or 0) < 9)) or ((G.GAME and not G.GAME.blind) and may.conf.Music == 10) and 100.5
+		return (found_surreal and G.STATE ~= G.STATES.SHOP and (not may.booster()) and (not G.shop) and (may.conf.Surrealmusic and (may.transcendence or 0) < 9)) or ((G.GAME and not G.GAME.blind) and may.conf.Music == 10) and 100.5
 	end
 })
+
+SMODS.Sound({
+	key = "music_surreal_shop",
+	path = "music/music_surreal_shop.ogg",
+	sync = true,
+	pitch = 1,
+	select_music_track = function()
+		if G.GAME and G.GAME.blind and G.GAME.blind.config.blind.tainted and may.conf.Taintedmusic then
+			return false
+		end
+		local found_surreal
+		if G.jokers then
+			for k, v in pairs(G.jokers.cards) do
+				if v:gc().rarity == 'may_surreal' then
+					found_surreal = true
+				end
+			end
+		end
+		return (found_surreal and G.shop and (not may.booster()) and (may.conf.Surrealshopmusic and (may.transcendence or 0) < 9)) or ((G.GAME and not G.GAME.blind) and may.conf.Music == 17) and 100.5
+	end
+})
+
 
 SMODS.Sound({
 	key = "music_hyperascendant",
@@ -290,6 +315,17 @@ SMODS.Sound({
 	sync = true,
 	pitch = 1,
 	select_music_track = function()
+		if G.GAME and G.GAME.blind and G.GAME.blind.config.blind.tainted and may.conf.Taintedmusic then
+			return false
+		end
+		local found_surreal
+		if G.jokers then
+			for k, v in pairs(G.jokers.cards) do
+				if v:gc().rarity == 'may_surreal' then
+					return false
+				end
+			end
+		end
 		local found_hyperascendant
 		if G.jokers then
 			for k, v in pairs(G.jokers.cards) do
@@ -298,7 +334,36 @@ SMODS.Sound({
 				end
 			end
 		end
-		return (found_hyperascendant and (may.conf.Hyperascendantmusic and (may.transcendence or 0) < 9)) or ((G.GAME and not G.GAME.blind) and may.conf.Music == 6) and 100.6
+		return (found_hyperascendant and G.STATE ~= G.STATES.SHOP and (not may.booster()) and (not G.shop) and (may.conf.Hyperascendantmusic and (may.transcendence or 0) < 9)) or ((G.GAME and not G.GAME.blind) and may.conf.Music == 6) and 100.6
+	end
+})
+
+SMODS.Sound({
+	key = "music_hyperascendant_shop",
+	path = "music/music_hyperascendant_shop.ogg",
+	sync = true,
+	pitch = 1,
+	select_music_track = function()
+		if G.GAME and G.GAME.blind and G.GAME.blind.config.blind.tainted and may.conf.Taintedmusic then
+			return false
+		end
+		local found_surreal
+		if G.jokers then
+			for k, v in pairs(G.jokers.cards) do
+				if v:gc().rarity == 'may_surreal' then
+					return false
+				end
+			end
+		end
+		local found_hyperascendant
+		if G.jokers then
+			for k, v in pairs(G.jokers.cards) do
+				if v:gc().rarity == 'may_hyperascendant' then
+					found_hyperascendant = true
+				end
+			end
+		end
+		return (found_hyperascendant and G.shop and (not may.booster()) and (may.conf.Hyperascendantshopmusic and (may.transcendence or 0) < 9)) or ((G.GAME and not G.GAME.blind) and may.conf.Music == 16) and 100.6
 	end
 })
 

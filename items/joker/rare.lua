@@ -1007,15 +1007,17 @@ SMODS.Joker {
 		text = {
 			{
 				"Played {C:clubs}Clubs{} have a {C:green}#1# in #2#{} chance",
-				"to give {C:attention}+#3# Card Selection Limit{}",
-				"if {C:attention}Hand Size{} is {C:attention}bigger{} than {X:attention,C:white}X#4#{} {C:attention}Card Selection Limit{}",
+				"to create a random {C:attention}Tag{} if played {C:purple}Poker Hand{}", 
+				"is {C:mult}not{} your {C:attention}most played{}", 
+				may.pager(), 
+				"{C:inactive}#3#{}"
 			},
 			{
 				"{C:inactive,E:1}Art & original idea by _TeKKen_{}"
 			},
 		}
 	},
-	config = { extra = { odds = 6, selectionlimit = 1, multiplier = 0.5 } },
+	config = { extra = { odds = 6 } },
 	pos = { x = 5, y = 8 },
 	cost = 6,
 	rarity = 3,
@@ -1025,25 +1027,25 @@ SMODS.Joker {
 	demicoloncompat = true,
 	atlas = 'joker1',
 	loc_vars = function(self, info_queue, card)
-        return {vars = { (G.GAME.probabilities.normal or 1), card.ability.extra.odds, card.ability.extra.selectionlimit, card.ability.extra.multiplier }}
+        return { vars = { (G.GAME.probabilities.normal or 1), card.ability.extra.odds, localize(may.favhand(), 'poker_hands') } }
     end,
     calculate = function(self, card, context)
 		if (context.individual and context.cardarea == G.play) or (context.individual and context.cardarea == G.play and context.blueprint) then
-			if G.hand.config.card_limit > G.hand.config.highlighted_limit * card.ability.extra.multiplier then
+			if context.scoring_name ~= may.favhand() then
 				if context.other_card:is_suit('Clubs') then
 					if pseudorandom('may_pesto') < G.GAME.probabilities.normal / card.ability.extra.odds then
-						G.hand:change_max_highlight(card.ability.extra.selectionlimit)
+						may.random_tag(true)
 						return {
-							message = '+'..card.ability.extra.selectionlimit..' Card Selection Limit'
+							message = '+1 Tag'
 						}
 					end
 				end
 			end
 		end
 		if context.forcetrigger then
-			G.hand:change_max_highlight(card.ability.extra.selectionlimit)
+			may.random_tag(true)
 			return {
-				message = '+'..card.ability.extra.selectionlimit..' Card Selection Limit'
+				message = '+1 Tag'
 			}
 		end
 	end

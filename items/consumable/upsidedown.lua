@@ -2518,7 +2518,7 @@ SMODS.Consumable {
 			end
 		end
 		delay(0.5)
-		may.ease_interest_cap(5)
+		may.ease_interest_cap(-1, 5)
 		SMODS.calculate_context({ remove_playing_cards = true, removed = targets })
 	end
 }

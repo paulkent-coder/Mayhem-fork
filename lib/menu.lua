@@ -25,6 +25,12 @@ else
 	})
 end
 
+may.unstable_smods = {
+	'1.0.0~BETA-1221a', 
+	'1.0.0~BETA-1501a', 
+	'1.0.0~BETA-1503a'
+}
+
 local oldfunc = Game.main_menu
 Game.main_menu = function(change_context)
 	if change_context ~= "splash" then
@@ -200,10 +206,8 @@ Game.main_menu = function(change_context)
 		G:save_settings()
    end
 	-- Unstable SMODS notice
-	if (not may.conf.notices.smods) and SMODS.version == "1.0.0~BETA-1221a" then
+	if table_hasvalue(may.unstable_smods, SMODS.version) then
 		may.display_notification('smods', function() play_sound("foil1", 0.7, 0.3); play_sound("gong", 1.4, 0.15) end)
-		may.conf.notices.smods = true 
-		G:save_settings()
     end 
 	return ret
 end

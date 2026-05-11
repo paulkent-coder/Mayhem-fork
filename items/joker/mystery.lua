@@ -70,7 +70,7 @@ SMODS.Joker {
 					N = math.max(N, 1)
 				end
 			end
-		end	
+		end
 		return { vars = { G.GAME.may_instability or 0, G.GAME.may_instability_threshold or 8, '{'..number_format(N)..'}', G.GAME.may_instability_increase or 10, UC_messages[math.random(#UC_messages)] } }
 	end,
 	add_to_deck = function(self, card, from_debuff)

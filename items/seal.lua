@@ -165,7 +165,7 @@ SMODS.Seal {
 		label = 'Pink Seal',
 		text = {
 			"{X:planet,C:white}X1.25{} level of {C:attention}played{}", 
-			"{C:purple}Poker Hand{} but {X:money,C:white}X0.85${}", 
+			"{C:purple}Poker Hand{} but {X:money,C:white}X0.7${}", 
 			"after {C:attention}scoring{} if played"
 		}
 	},
@@ -177,10 +177,13 @@ SMODS.Seal {
 		if context.cardarea == G.play and context.after then
 			may.level_up_hand_hyper(card, context.scoring_name, nil, 1.25, 0)
 			return {
-				x_dollars = 0.85
+				x_dollars = 0.7
 			}
 		end
-	end
+	end,
+	in_pool = function(self, args)
+        return G.GAME.may_endless_mode, { allow_duplicates = true }
+    end
 }
 
 SMODS.Seal {
@@ -225,7 +228,8 @@ SMODS.Seal {
 		name = 'White Seal',
 		label = 'White Seal',
 		text = {
-			"{X:attention,C:white}X10{} Nominal Chips"
+			"{X:attention,C:white}+X10{} Nominal Chips",
+			"when applied"
 		}
 	},
 	atlas = 'seal',
@@ -234,7 +238,7 @@ SMODS.Seal {
 	sound = { sound = 'gold_seal', per = 1.2, vol = 0.4 },
 	calculate = function(self, card, context)
 		if card then
-			card.ability.nominal_multiplier = card.ability.nominal_multiplier or 10
+			card.ability.nominal_multiplier = (card.ability.nominal_multiplier or 0) + 10
 		end
 	end
 }

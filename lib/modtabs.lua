@@ -362,7 +362,7 @@ SMODS.current_mod.extra_tabs = function()
 								label = "Menu Music",
 								scale = 1,
 								w = 6,
-								options = {"Auto", "Mayhem Theme", "Eternum Theme", "Yotta Card", "UltraBlind", "Transcendent Joker", "Enhanced Pack", "Party Time", "Rondo Discoteca", "Opalescent Joker", "Pixel Pack", "Tainted Boss", "Fusion Joker", "Fusion Pack", "Fusion Joker (Shop)", "Default"},
+								options = {"Auto", "Mayhem Theme", "Eternum Theme", "Yotta Card", "UltraBlind", "Transcendent Joker", "Enhanced Pack", "Party Time", "Rondo Discoteca", "Opalescent Joker", "Pixel Pack", "Tainted Boss", "Fusion Joker", "Fusion Pack", "Fusion Joker (Shop)", "Transcendent Joker (Shop)", "Opalescent Joker (Shop)", "Default"},
 								opt_callback = 'may_upd_music',
 								current_option = may.conf.Music,
 							})
