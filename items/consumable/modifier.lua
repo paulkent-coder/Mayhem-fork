@@ -412,12 +412,12 @@ SMODS.Consumable {
 			local fails = 0
 			for i=1, number do 
 				if SMODS.pseudorandom_probability(card, "may_glass_card", G.GAME.probabilities.normal, card.ability.extra.odds, "Glass Card") then 
-					successes = successes + 1
-				else 
 					fails = fails + 1
+				else 
+					successes = successes + 1
 				end 
 			end
-			local total = (card.ability.extra.x_mult1 ^ fails) * (card.ability.extra.x_mult2 ^ fails)
+			local total = (card.ability.extra.x_mult1 ^ successes) * (card.ability.extra.x_mult2 ^ fails)
 			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'X'..total}, colour = G.C.MULT, delay = 0.45})
 			may.hand_multchips_all(v, nil, false, nil, {0, total})
 		end
@@ -442,7 +442,7 @@ SMODS.Consumable {
 				"Each {C:dark_edition}Steel Card{}", 
 				"{C:attention}held in hand{} gives", 
 				"{X:mult,C:white}X#1#{} {C:may_ethereal}Level{} Mult to {C:attention}all{} {C:purple}Poker Hands{}", 
-				"{C:inactive}Currently{} {X:mult,C:white}X#1#{} {C:may_ethereal}Level{} {C:inactive}Mult{}"
+				"{C:inactive}Currently{} {X:mult,C:white}X#2#{} {C:may_ethereal}Level{} {C:inactive}Mult{}"
 			}, 
 			{
 				"{C:inactive,E:1}Art by Superb Thing{}"
@@ -627,6 +627,7 @@ SMODS.Consumable {
 			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..(card.ability.extra.chips*number)}, colour = G.C.CHIPS, delay = 0.45})
 			may.hand_multchips_all(v, may.favhand(), false, {-1, card.ability.extra.chips * number})
 		end
+		may.ch()
 		for k, v in pairs(targets) do 
 			local percent = 1.15 - (k-0.999)/(#targets-0.998)*0.3
 			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
@@ -855,7 +856,7 @@ SMODS.Consumable {
 			else 
 				if mult > 0 then 
 					card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..mult}, colour = G.C.MULT, delay = 0.45})
-					may.hand_multchips_all(v, nil, false, nil, {-1, card.ability.extra.nult})
+					may.hand_multchips_all(v, nil, false, nil, {-1, mult})
 				end 
 				if dollars > 0 then
 					card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..dollars}, colour = G.C.MONEY, delay = 0.45})
@@ -963,7 +964,7 @@ SMODS.Consumable {
 		end
 		for k, v in pairs(targets) do 
 			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'X'..card.ability.extra.x_mult ^ number}, colour = G.C.MULT, delay = 0.45})
-			may.hand_multchips_all(v, nil, false, nil, {0, card.ability.extra.x_mult})
+			may.hand_multchips_all(v, nil, false, nil, {0, card.ability.extra.x_mult ^ number})
 		end
 		may.ch()
 		for k, v in pairs(targets) do 

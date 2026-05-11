@@ -477,7 +477,7 @@ function may.hand_mod_dollars_all(card, silent, arrow, mod)
 		G.E_MANAGER:add_event(Event({delay = 0.2, func = function()
 			ease_colour(G.C.UI_CHIPS, copy_table(G.C.GOLD), 0.1)
 		return true end}))
-		may.h('All Hands', '...', '---', G.GAME.hands[hand].level)
+		may.h('All Hands', '...', '---', '...')
 		local op = may.generate_arrow_text(arrow)
 		local op_num = arrow
 		if arrow == -1 and to_big(mod) < to_big(0) then
