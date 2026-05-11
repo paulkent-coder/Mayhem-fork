@@ -17,7 +17,9 @@ SMODS.Seal {
 	calculate = function(self, card, context)
 		if context.remove_playing_cards and context.cardarea ~= G.discard and table_hasvalue(context.removed, card) then
 			G.E_MANAGER:add_event(Event({trigger = 'after', func = function()
+				local prevState = G.STATE
 				may.voucher(may.get_next_voucher_key())
+				G.STATE = prevState
 			return true end}))
 		end
 	end,
