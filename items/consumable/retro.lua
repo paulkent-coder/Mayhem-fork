@@ -54,7 +54,7 @@ SMODS.Consumable {
 			G.GAME.may_retro_stats = G.GAME.may_retro_stats or {}
 			G.GAME.may_retro_stats.easter_egg = math.ceil((G.GAME.may_retro_stats.easter_egg or 2) * card.ability.extra.mul)
 			if G.GAME.may_retro_stats.easter_egg >= 40 then
-				card_eval_status_text(card, 'extra', nil, nil, nil, { message = "Ascended!", colour = SMODS.Gradients.may_col_interdimensional, delay = 0.45, sound = 'may_ascended'})
+				card_eval_status_text(card, 'extra', nil, nil, nil, { message = "Ascended!", colour = SMODS.Gradients.may_col_interdimensional, delay = 0.45, sound = 'may_c_ascended'})
 			else
 				card_eval_status_text(card, 'extra', nil, nil, nil, { message = "Increased!", colour = G.C.SECONDARY_SET.retrocards, delay = 0.45, sound = 'may_forcetrigger'})
 			end
@@ -121,7 +121,7 @@ SMODS.Consumable {
 			G.GAME.may_retro_stats = G.GAME.may_retro_stats or {}
 			G.GAME.may_retro_stats.one_up = math.ceil((G.GAME.may_retro_stats.one_up or 5) * card.ability.extra.mul)
 			if G.GAME.may_retro_stats.one_up >= 100 then
-				card_eval_status_text(card, 'extra', nil, nil, nil, { message = "Ascended!", colour = SMODS.Gradients.may_col_interdimensional, delay = 0.45, sound = 'may_ascended'})
+				card_eval_status_text(card, 'extra', nil, nil, nil, { message = "Ascended!", colour = SMODS.Gradients.may_col_interdimensional, delay = 0.45, sound = 'may_c_ascended'})
 			else
 				card_eval_status_text(card, 'extra', nil, nil, nil, { message = "Increased!", colour = G.C.SECONDARY_SET.retrocards, delay = 0.45, sound = 'may_forcetrigger'})
 			end
@@ -192,7 +192,7 @@ SMODS.Consumable {
 			G.GAME.may_retro_stats = G.GAME.may_retro_stats or {}
 			G.GAME.may_retro_stats.lootbox = math.ceil((G.GAME.may_retro_stats.lootbox or 5) * card.ability.extra.mul)
 			if G.GAME.may_retro_stats.lootbox >= 60 then
-				card_eval_status_text(card, 'extra', nil, nil, nil, { message = "Ascended!", colour = SMODS.Gradients.may_col_interdimensional, delay = 0.45, sound = 'may_ascended'})
+				card_eval_status_text(card, 'extra', nil, nil, nil, { message = "Ascended!", colour = SMODS.Gradients.may_col_interdimensional, delay = 0.45, sound = 'may_c_ascended'})
 			else
 				card_eval_status_text(card, 'extra', nil, nil, nil, { message = "Increased!", colour = G.C.SECONDARY_SET.retrocards, delay = 0.45, sound = 'may_forcetrigger'})
 			end
