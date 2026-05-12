@@ -829,7 +829,7 @@ SMODS.Consumable {
 		text = {
 			{
 				"{C:atterntion}Duplicate{} all {C:attention}selected playing cards{}",
-				"{C:attention}#1# Ante per{} selected {C:attention}card{}"
+				-- "{C:attention}#1# Ante per{} selected {C:attention}card{}"
 			},
 			{
 				"{C:inactive,E:1}Art by _TeKKen_{}"
@@ -864,7 +864,7 @@ SMODS.Consumable {
 			play_sound('card1')
 		end
 		playing_card_joker_effects(new_cards)
-		ease_ante(#G.hand.highlighted * card.ability.extra.ante)
+		-- ease_ante(#G.hand.highlighted * card.ability.extra.ante)
 	end,
 }
 
