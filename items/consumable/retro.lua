@@ -142,7 +142,7 @@ SMODS.Consumable {
 
 SMODS.Consumable {
 	key = 'lootbox',
-	config = { extra = { cards = 5, mul = 1.75, asc_cards = 15 } },
+	config = { extra = { cards = 5, mul = 1.5, asc_cards = 15 } },
 	loc_txt = {
 		name = 'LOOTBOX',
 		text = {
