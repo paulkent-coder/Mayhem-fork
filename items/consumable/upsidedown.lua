@@ -828,7 +828,7 @@ SMODS.Consumable {
 		name = 'HannaH MaM',
 		text = {
 			{
-				"{C:atterntion}Duplicate{} all {C:attention}selected playing cards{}",
+				"{C:attention}Duplicate{} all {C:attention}selected playing cards{}",
 				-- "{C:attention}#1# Ante per{} selected {C:attention}card{}"
 			},
 			{
