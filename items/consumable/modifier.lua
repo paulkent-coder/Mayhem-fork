@@ -3606,14 +3606,14 @@ SMODS.Consumable {
 
 SMODS.Consumable {
 	key = 'blue_seal_card',
-	config = { extra = { planets = 2, target = 'Blue' } },
+	config = { extra = { planets = 1, target = 'Blue' } },
 	loc_txt = {
 		name = 'Blue Seal Card',
 		text = {
 			{
 				"Each card with {C:dark_edition}Blue Seal{}", 
 				"{C:attention}held in hand{} creates", 
-				"{C:attention}#1#{} random {C:planet}Planet Cards{}", 
+				"{C:attention}#1#{} random {X:mult,C:white}Rare{} {C:planet}Planet Card{}", 
 				"{C:inactive}Currently #2# Planet Cards{}",
 				"{C:inactive}Does not require room{}",
 			}, 
@@ -3668,7 +3668,7 @@ SMODS.Consumable {
 			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..card.ability.extra.planets..' Planets'}, colour = G.C.SECONDARY_SET.Planet, delay = 0.45})
 			for i = 1, card.ability.extra.planets do
 				G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2, func = function()
-					local card2 = create_card("Planet", G.consumables, nil, nil, nil, nil, nil, "may_blue_seal_cards")
+					local card2 = create_card("Planet", G.consumables, nil, nil, nil, nil, pseudorandom_element(may.rare_planets, pseudoseed('may_blue_seal_cards')), "may_blue_seal_cards")
 					card2:add_to_deck()
 					G.consumeables:emplace(card2)
 					play_sound('timpani')
