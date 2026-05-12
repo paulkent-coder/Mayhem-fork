@@ -1762,7 +1762,7 @@ SMODS.Consumable {
 	key = 'rings_of_uranus',
 	pos = { x = 4, y = 3 },
 	atlas = 'planet',
-	config = { extra = { levels = 0.8, } },
+	config = { extra = { levels = 1, } },
 	set_card_type_badge = function(self, card, badges)
 		badges[1] = create_badge('Ring System', get_type_colour(self or card.config, card), nil, 1.2)
 	end,
