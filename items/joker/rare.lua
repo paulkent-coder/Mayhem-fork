@@ -653,8 +653,8 @@ SMODS.Joker {
 				local wheel = create_card('Tarot', G.consumeables, nil, nil, nil, nil, 'c_wheel_of_fortune', nil)
                 wheel:setQty(math.ceil(card.ability.extra.cards))
 				wheel:add_to_deck()
-                wheel.sell_cost = 0
                 wheel:set_edition('e_negative')
+                wheel.sell_cost = 0
 				G.consumeables:emplace(wheel)
                 play_sound('timpani')
 			return true end}))
