@@ -788,7 +788,7 @@ SMODS.Consumable {
 				enhancement = may.get_modifier_card(other.config.center.key)
 			end
 			if other.seal then 
-				seal = may.get_modifier_card(other.seal.key)
+				seal = may.get_modifier_card(other.seal)
 			end
 		    if edition or seal or enhancement then
 			    return may.canuse() and #G.hand.highlighted <= (1 + (card.area == G.hand and 1 or 0)) and #G.hand.highlighted > (card.area == G.hand and 1 or 0) and (other.config.center ~= G.P_CENTERS.c_base or other.seal or other.edition)
@@ -848,7 +848,7 @@ SMODS.Consumable {
 			enhancement = may.get_modifier_card(other.config.center.key)
 		end
 		if other.seal then 
-			seal = may.get_modifier_card(other.seal.key)
+			seal = may.get_modifier_card(other.seal)
 		end
 		G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
 			play_sound('tarot1')
