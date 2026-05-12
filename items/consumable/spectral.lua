@@ -1457,14 +1457,9 @@ SMODS.Consumable {
 		name = {"Icarus", "{C:dark_edition,s:0.7}Spectral Planet{}"}, 
 		text = {
             "Each card {C:attention}held in hand{}", 
-			"levels up {C:attention}R{} random {C:purple}Poker Hands{}", 
-			"by {C:chips}C{}",
+			"levels up a {C:attention}random{} {C:purple}Poker Hand{}", 
+			"by {X:attention,C:white}X0.1{} its total {C:chips}+Chips{}",
 			may.pager(50),
-			"{C:attention}R{} is the card's {C:attention}rank{}", 
-			"{C:chips}C{} is the card's total {C:chips}+Chips{}", 
-            "{X:attention,C:white}X0.02{}",
-			may.pager(50),
-			"{C:inactive}R for modded ranks is 15{}", 
 			"{C:inactive}Ignores rankless cards{}"
 		}
 	},
@@ -1489,31 +1484,10 @@ SMODS.Consumable {
 			    if type(R) ~= 'number' then 
 				    R = 15
 			    end
-			    local C = (v:may_get_nominal_chips() + (v.ability.perma_bonus or 0)) * 0.02
-			    for i = 1, R do
-				    level_up_hand(v, may.rndhand(), true, C)
-			    end
-			    G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, func = function()
-				    play_sound('generic1')
-				    card:juice_up(0.3, 0.5)
-			    return true end}))
-			    may.h(number_format(R)..' Hands', '...', '...', '')
-				G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2, func = function()
-					play_sound('tarot1')
-					v:juice_up(0.8, 0.5)
-				return true end}))
-				may.hm('+', true)
-				G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2, func = function()
-					play_sound('tarot1')
-					v:juice_up(0.8, 0.5)
-				return true end}))
-				may.hc('+', true)
-				G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2, func = function()
-					play_sound('tarot1')
-					v:juice_up(0.8, 0.5)
-				return true end}))
-				may.hlv('+'..number_format(C), true)
-				delay(1.3)
+			    local C = (v:may_get_nominal_chips() + (v.ability.perma_bonus or 0)) * 0.1
+				local hand = may.rndhand()
+				may.th(hand)
+				level_up_hand(v, hand, false, C)
 				may.ch()
 			end
 		end
@@ -1525,8 +1499,9 @@ SMODS.Consumable {
 			    if type(R) ~= 'number' then 
 				    R = 15
 			    end
+				R = 1
                 R = R * number
-			    local C = (v:may_get_nominal_chips() + (v.ability.perma_bonus or 0)) * 0.02
+			    local C = (v:may_get_nominal_chips() + (v.ability.perma_bonus or 0)) * 0.1
 			    for i = 1, R do
 				    level_up_hand(v, may.rndhand(), true, C)
 			    end
