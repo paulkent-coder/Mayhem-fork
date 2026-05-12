@@ -3701,7 +3701,7 @@ SMODS.Consumable {
 			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..card.ability.extra.planets * number..' Planets'}, colour = G.C.SECONDARY_SET.Planet, delay = 0.45})
 			for i = 1, card.ability.extra.planets * number do
 				G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2, func = function()
-					local card2 = create_card("Planet", G.consumables, nil, nil, nil, nil, nil, "may_blue_seal_cards")
+					local card2 = create_card("Planet", G.consumables, nil, nil, nil, nil, pseudorandom_element(may.rare_planets, pseudoseed('may_blue_seal_cards')), "may_blue_seal_cards")
 					card2:add_to_deck()
 					G.consumeables:emplace(card2)
 					play_sound('timpani')
