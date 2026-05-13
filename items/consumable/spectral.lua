@@ -979,13 +979,13 @@ SMODS.Consumable {
 	end,
 	discovered = true,
 	loc_vars = function(self, info_queue, card)
-		local normal, odds = SMODS.get_probability_vars(card, (G.GAME.probabilities.normal or 1), card.ability.extra.odds, "Vile")
+		local normal, odds = SMODS.get_probability_vars(card, 1, card.ability.extra.odds, "Vile")
 		return { vars = { normal, odds, card.ability.extra.x_dollars } }
 	end,
 	use = function(self, card, area, copier)
 		may.randomise(G.hand.cards, false)
 		for k, v in pairs(G.hand.cards) do
-			if SMODS.pseudorandom_probability(card, "may_vile", G.GAME.probabilities.normal, card.ability.extra.odds, "Vile") then
+			if SMODS.pseudorandom_probability(card, "may_vile", 1, card.ability.extra.odds, "Vile") then
 				may.hypermoney(0, card.ability.extra.x_dollars, false)
 				card_eval_status_text(v, 'extra', nil, nil, nil, { message = 'X'..card.ability.extra.x_dollars..'$', colour = G.C.MONEY, delay = 0.45})
 			end

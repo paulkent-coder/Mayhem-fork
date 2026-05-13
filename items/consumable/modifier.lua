@@ -358,7 +358,7 @@ SMODS.Consumable {
 	end,
 	loc_vars = function(self, info_queue, card) 
 		info_queue[#info_queue + 1] = G.P_CENTERS[card.ability.extra.target]
-		local normal, odds = SMODS.get_probability_vars(card, (G.GAME.probabilities.normal or 1), card.ability.extra.odds, "Glass Card")
+		local normal, odds = SMODS.get_probability_vars(card, 1, card.ability.extra.odds, "Glass Card")
 		return { vars = { card.ability.extra.x_mult1, normal, odds, card.ability.extra.x_mult2 } }
 	end,
 	use = function(self, card, area, copier)
@@ -376,7 +376,7 @@ SMODS.Consumable {
 			return true end})) 
 		end
 		for k, v in pairs(targets) do 
-			if SMODS.pseudorandom_probability(card, "may_glass_card", G.GAME.probabilities.normal, card.ability.extra.odds, "Glass Card") then 
+			if SMODS.pseudorandom_probability(card, "may_glass_card", 1, card.ability.extra.odds, "Glass Card") then 
 				card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'X'..card.ability.extra.x_mult2}, colour = G.C.MULT, delay = 0.45, sound = 'may_error'})
 				may.hand_multchips_all(v, nil, false, nil, {0, card.ability.extra.x_mult2})
 			else
@@ -411,7 +411,7 @@ SMODS.Consumable {
 			local successes = 0
 			local fails = 0
 			for i=1, number do 
-				if SMODS.pseudorandom_probability(card, "may_glass_card", G.GAME.probabilities.normal, card.ability.extra.odds, "Glass Card") then 
+				if SMODS.pseudorandom_probability(card, "may_glass_card", 1, card.ability.extra.odds, "Glass Card") then 
 					fails = fails + 1
 				else 
 					successes = successes + 1
@@ -779,8 +779,8 @@ SMODS.Consumable {
 	loc_vars = function(self, info_queue, card) 
 		info_queue[#info_queue + 1] = G.P_CENTERS[card.ability.extra.target]
 		info_queue[#info_queue + 1] = { key = "may_hand_dollars_tutorial", set = "Other" }
-		local normal1, odds1 = SMODS.get_probability_vars(card, (G.GAME.probabilities.normal or 1), card.ability.extra.odds1, "Lucky Card")
-		local normal2, odds2 = SMODS.get_probability_vars(card, (G.GAME.probabilities.normal or 1), card.ability.extra.odds2, "Lucky Card")
+		local normal1, odds1 = SMODS.get_probability_vars(card, 1, card.ability.extra.odds1, "Lucky Card")
+		local normal2, odds2 = SMODS.get_probability_vars(card, 1, card.ability.extra.odds2, "Lucky Card")
 		return { vars = { normal1, odds1, card.ability.extra.mult, normal2, odds2, card.ability.extra.p_dollars } }
 	end,
 	use = function(self, card, area, copier)
@@ -799,12 +799,12 @@ SMODS.Consumable {
 		end
 		for k, v in pairs(targets) do 
 			local hit = false 
-			if SMODS.pseudorandom_probability(card, "may_lucky_card", G.GAME.probabilities.normal, card.ability.extra.odds1, "Lucky Card") then 
+			if SMODS.pseudorandom_probability(card, "may_lucky_card", 1, card.ability.extra.odds1, "Lucky Card") then 
 				hit = true 
 				card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..card.ability.extra.mult}, colour = G.C.MULT, delay = 0.45})
 				may.hand_multchips_all(v, nil, false, nil, {-1, card.ability.extra.mult})
 			end
-			if SMODS.pseudorandom_probability(card, "may_lucky_card", G.GAME.probabilities.normal, card.ability.extra.odds2, "Lucky Card") then 
+			if SMODS.pseudorandom_probability(card, "may_lucky_card", 1, card.ability.extra.odds2, "Lucky Card") then 
 				hit = true 
 				card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..card.ability.extra.p_dollars}, colour = G.C.MONEY, delay = 0.45})
 				may.hand_mod_dollars_all(v, false, -1, card.ability.extra.p_dollars)
@@ -842,11 +842,11 @@ SMODS.Consumable {
 			local mult = 0
 			local dollars = 0
 			for i=1, number do 
-				if SMODS.pseudorandom_probability(card, "may_lucky_card", G.GAME.probabilities.normal, card.ability.extra.odds1, "Lucky Card") then 
+				if SMODS.pseudorandom_probability(card, "may_lucky_card", 1, card.ability.extra.odds1, "Lucky Card") then 
 					hit = true 
 					mult = mult + card.ability.extra.mult
 				end
-				if SMODS.pseudorandom_probability(card, "may_lucky_card", G.GAME.probabilities.normal, card.ability.extra.odds2, "Lucky Card") then 
+				if SMODS.pseudorandom_probability(card, "may_lucky_card", 1, card.ability.extra.odds2, "Lucky Card") then 
 					hit = true 
 					dollars = dollars + card.ability.extra.p_dollars
 				end
@@ -3971,7 +3971,7 @@ SMODS.Consumable {
 	end,
 	loc_vars = function(self, info_queue, card) 
 		info_queue[#info_queue + 1] = SMODS.Seals[card.ability.extra.target]
-		local normal, odds = SMODS.get_probability_vars(card, (G.GAME.probabilities.normal or 1), card.ability.extra.odds, "Copper Seal Card")
+		local normal, odds = SMODS.get_probability_vars(card, 1, card.ability.extra.odds, "Copper Seal Card")
 		return { vars = { normal, odds } }
 	end,
 	use = function(self, card, area, copier)
@@ -3989,7 +3989,7 @@ SMODS.Consumable {
 			return true end})) 
 		end
 		for k, v in pairs(targets) do 
-			if SMODS.pseudorandom_probability(card, "may_copper_seal", G.GAME.probabilities.normal, card.ability.extra.odds, "Copper Seal") then
+			if SMODS.pseudorandom_probability(card, "may_copper_seal", 1, card.ability.extra.odds, "Copper Seal") then
 			    card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+1 Voucher'}, colour = G.C.GREEN, delay = 0.45})
 				G.E_MANAGER:add_event(Event({trigger = 'after', func = function()
 				    may.voucher(may.get_next_voucher_key())
@@ -4038,7 +4038,7 @@ SMODS.Consumable {
 		end
 		for k, v in pairs(targets) do 
 			for i = 1, number do
-			    if SMODS.pseudorandom_probability(card, "may_copper_seal", G.GAME.probabilities.normal, card.ability.extra.odds, "Copper Seal") then
+			    if SMODS.pseudorandom_probability(card, "may_copper_seal", 1, card.ability.extra.odds, "Copper Seal") then
 					card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+1 Voucher'}, colour = G.C.GREEN, delay = 0.45})
 				    G.E_MANAGER:add_event(Event({trigger = 'after', func = function()
 						may.voucher(may.get_next_voucher_key())
