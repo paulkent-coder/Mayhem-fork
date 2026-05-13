@@ -447,13 +447,13 @@ SMODS.Joker {
 	cost = 8,
 	config = { extra = { odds = 2, } },
 	loc_vars = function(self, info_queue, card)
-        local normal, odds = SMODS.get_probability_vars(card, (G.GAME.probabilities.normal or 1), card.ability.extra.odds, "Wheel of Eternity")
+        local normal, odds = SMODS.get_probability_vars(card, 1, card.ability.extra.odds, "Wheel of Eternity")
 		info_queue[#info_queue + 1] = G.P_CENTERS.c_wheel_of_fortune
 		return { vars = { normal, odds } }
 	end,
 	calculate = function(self, card, context)
 		if context.using_consumeable and context.consumeable and context.consumeable:gc().key == 'c_wheel_of_fortune' then
-            if SMODS.pseudorandom_probability(card, "may_wheel_of_eternity", G.GAME.probabilities.normal, card.ability.extra.odds, "Wheel of Eternity") then 
+            if SMODS.pseudorandom_probability(card, "may_wheel_of_eternity", 1, card.ability.extra.odds, "Wheel of Eternity") then 
                 G.E_MANAGER:add_event(Event({ func = function()
 				    card:juice_up(0.5, 0.5)
 				    local wheel = create_card('Tarot', G.consumeables, nil, nil, nil, nil, 'c_wheel_of_fortune', nil)
@@ -495,7 +495,7 @@ SMODS.Joker {
 	},
 	config = { extra = { odds = 3, level = 1 } },
 	loc_vars = function(self, info_queue, card)
-        local normal, odds = SMODS.get_probability_vars(card, (G.GAME.probabilities.normal or 1), card.ability.extra.odds, "Zodiac")
+        local normal, odds = SMODS.get_probability_vars(card, 1, card.ability.extra.odds, "Zodiac")
 		return { vars = { normal, odds, card.ability.extra.level, may.favhand() } }
 	end,
 	rarity = 2,
@@ -505,7 +505,7 @@ SMODS.Joker {
 	pos = { x = 6, y = 0 },
 	cost = 5,
 	calculate = function(self, card, context)
-		if (context.using_consumeable and context.consumeable:gc().set == 'Tarot' and SMODS.pseudorandom_probability(card, "may_zodiac", G.GAME.probabilities.normal, card.ability.extra.odds, "Zodiac")) or context.forcetrigger then 
+		if (context.using_consumeable and context.consumeable:gc().set == 'Tarot' and SMODS.pseudorandom_probability(card, "may_zodiac", 1, card.ability.extra.odds, "Zodiac")) or context.forcetrigger then 
             may.th(may.favhand())
             level_up_hand(card, may.favhand(), false, card.ability.extra.level)
             may.ch()
@@ -543,11 +543,11 @@ SMODS.Joker {
 	cost = 4,
 	loc_vars = function(self, info_queue, card)
         info_queue[#info_queue + 1] = G.P_CENTERS.c_may_deimos
-        local normal, odds = SMODS.get_probability_vars(card, (G.GAME.probabilities.normal or 1), card.ability.extra.odds, "Cement Joker")
+        local normal, odds = SMODS.get_probability_vars(card, 1, card.ability.extra.odds, "Cement Joker")
 		return { vars = { normal, odds } }
 	end,
 	calculate = function(self, card, context)
-		if (context.setting_blind and SMODS.pseudorandom_probability(card, "may_cement_joker", G.GAME.probabilities.normal, card.ability.extra.odds, "Cement Joker")) or context.forcetrigger then
+		if (context.setting_blind and SMODS.pseudorandom_probability(card, "may_cement_joker", 1, card.ability.extra.odds, "Cement Joker")) or context.forcetrigger then
             if G.consumeables and #G.consumeables.cards < G.consumeables.config.card_limit then
 			    G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
 				    play_sound('timpani')

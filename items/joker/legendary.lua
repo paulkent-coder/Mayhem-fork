@@ -187,7 +187,7 @@ SMODS.Joker {
 			}
 		}
 		info_queue[#info_queue + 1] = { key = "e_negative_consumable", set = "Edition", config = { extra = 1 } }
-		local normal, odds = SMODS.get_probability_vars(card, (G.GAME.probabilities.normal or 1), card.ability.extra.odds, "DOGGO")
+		local normal, odds = SMODS.get_probability_vars(card, 1, card.ability.extra.odds, "DOGGO")
 		return { vars = { normal, odds, card.ability.extra.copies, card.ability.extra.copies_scale }, main_end = main_end }
 	end,
 	add_to_deck = function(self, card, from_debuff)
@@ -213,7 +213,7 @@ SMODS.Joker {
 					return true end}))
 				end
 			end
-			if not context.blueprint and SMODS.pseudorandom_probability(card, "may_doggo", (G.GAME.probabilities.normal or 1), card.ability.extra.odds, "DOGGO") then
+			if not context.blueprint and SMODS.pseudorandom_probability(card, "may_doggo", 1, card.ability.extra.odds, "DOGGO") then
 				SMODS.scale_card(card, {
 					ref_table = card.ability.extra,
 					ref_value = "copies",
