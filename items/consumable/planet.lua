@@ -1169,7 +1169,7 @@ SMODS.Consumable {
 		text = {
 			"Gain {C:green}double{} the {C:planet}level{} of a",
 			"{C:attention}random{} {C:purple}Poker Hand{} as {C:money}money{}",
-			"then set it's {C:planet}level{} to {C:mult}1{}", 
+			"then set its {C:planet}level{} to {C:mult}1{}", 
             "{C:inactive}Max of +$#1#{}"
 		}
 	},
@@ -1390,7 +1390,7 @@ SMODS.Consumable {
 		text = {
 		    "Set the {C:planet}level{} of", 
 			"a {C:attention}random{} {C:purple}Poker Hand{} to {C:mult}1{}",
-			"and {C:green}distribute{} it's {C:attention}former{} {C:planet}level{}", 
+			"and {C:green}distribute{} its {C:attention}former{} {C:planet}level{}", 
 			"across all other {C:green}discovered{} {C:purple}Poker Hands{}", 
 		}
 	},

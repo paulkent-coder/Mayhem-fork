@@ -1877,7 +1877,7 @@ SMODS.Consumable {
 		text = {
 			{
 				"{C:attention}Select{} a {C:attention}playing card{} with an {C:dark_edition}Edition{}",
-				"{C:mult}Remove it's{} {C:dark_edition}Edition{} and {C:planet}level up{}",
+				"{C:mult}Remove its{} {C:dark_edition}Edition{} and {C:planet}level up{}",
 				"{C:attention}3 random{} {C:purple}Poker Hands{} by {C:attention}10{}",
 			},
 			{
