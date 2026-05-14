@@ -1940,7 +1940,7 @@ for k, v in pairs(may.jovian_moons) do
 		use = function(self, card)
 			may.hand_lvl_multchips(card, card.ability.extra.hand, false, {-1, card.ability.extra.lev_chips * (G.GAME.jovian_moon_effect or 1)}, {-1, card.ability.extra.lev_mult * (G.GAME.jovian_moon_effect or 1)})
 			if G.GAME.jovian_moon_multiplier then
-				may.hand_lvl_multchips(card, may.favhand(), false, {0, G.GAME.jovian_moon_multiplier}, {0, G.GAME.jovian_moon_multiplier})
+				may.hand_lvl_multchips(card, card.ability.extra.hand, false, {0, G.GAME.jovian_moon_multiplier}, {0, G.GAME.jovian_moon_multiplier})
 			end
 			if Engulf and card.edition then 
 				Engulf.EditionHand(card, card.ability.extra.hand, card.edition, 1)
@@ -1951,7 +1951,7 @@ for k, v in pairs(may.jovian_moons) do
 		bulk_use = function(self, card, area, copier, number)
 			may.hand_lvl_multchips(card, card.ability.extra.hand, false, {-1, card.ability.extra.lev_chips * (G.GAME.jovian_moon_effect or 1) * number}, {-1, card.ability.extra.lev_mult * (G.GAME.jovian_moon_effect or 1) * number})
 			if G.GAME.jovian_moon_multiplier then
-				may.hand_lvl_multchips(card, may.favhand(), false, {0, G.GAME.jovian_moon_multiplier ^ number}, {0, G.GAME.jovian_moon_multiplier ^ number})
+				may.hand_lvl_multchips(card, card.ability.extra.hand, false, {0, G.GAME.jovian_moon_multiplier ^ number}, {0, G.GAME.jovian_moon_multiplier ^ number})
 			end
 			if Engulf and card.edition then 
 				Engulf.EditionHand(card, card.ability.extra.hand, card.edition, 1)
