@@ -192,8 +192,22 @@ SMODS.Atlas {
 }
 
 SMODS.Atlas {
+	key = "voucher_personal",
+	path = "voucher_personal.png",
+	px = 71,
+	py = 95,
+}
+
+SMODS.Atlas {
 	key = "misc_voucher",
 	path = "misc_voucher.png",
+	px = 71,
+	py = 95,
+}
+
+SMODS.Atlas {
+	key = "misc_voucher_personal",
+	path = "misc_voucher_personal.png",
 	px = 71,
 	py = 95,
 }

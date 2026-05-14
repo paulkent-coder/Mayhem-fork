@@ -31,8 +31,8 @@ SMODS.Voucher {
 			"{C:attention}+2{} {C:green}Booster Packs{} in shop",
 		}
 	},
-	pos = { x = 2, y = 4 },
-	atlas = 'voucher',
+	pos = { x = 0, y = 0 },
+	atlas = 'voucher_personal',
 	cost = 10,
 	pools = { Tier3 = true },
 	unlocked = true,
