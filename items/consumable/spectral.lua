@@ -651,26 +651,35 @@ SMODS.Consumable {
 	loc_txt = {
 		name = "Deal",
 		text = {
-			"{C:attention}+#1# Joker Slots{}",
+			-- "{C:attention}+#1# Joker Slots{}",
+			"Gain {C:attention}#1# Negative Tags{}",
 			"{X:money,C:white}X#2#${}"
 		}
 	},
 	pos = { x = 2, y = 1 },
 	atlas = 'may_spectral',
 	cost = 4,
-	config = { extra = { slots = 2, x_dollars = 0.5 } },
+	config = { extra = { tags = 2, x_dollars = 0.5 } },
 	unlocked = true,
 	endless = true,
 	can_use = function(self, card)
 		return may.canuse()
 	end,
 	loc_vars = function(self, info_queue, card)
-		return { vars = { card.ability.extra.slots, card.ability.extra.x_dollars } }
+		return { vars = { card.ability.extra.tags, card.ability.extra.x_dollars } }
 	end,
 	discovered = true,
 	use = function(self, card, area, copier)
-		G.jokers:change_size(card.ability.extra.slots)
-		may.hypermoney(0, card.ability.extra.x_dollars, false)
+		-- G.jokers:change_size(card.ability.extra.slots)
+		for i=1, 2 do 
+            G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, func = function()
+                add_tag(Tag('tag_negative'))
+                play_sound('tarot1')
+            return true end}))
+        end 
+		G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.6, func = function()
+            may.hypermoney(0, card.ability.extra.x_dollars, false)
+        return true end}))
 	end, 
 	in_pool = function(self, args)
         return G.GAME.may_endless_mode, { allow_duplicates = false }
