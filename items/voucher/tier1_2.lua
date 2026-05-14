@@ -730,7 +730,7 @@ SMODS.Voucher {
 SMODS.Voucher {
 	key = 'astronomy',
 	loc_txt = {
-		name = "Astronomy",
+		name = "Gravity",
 		text = {
 			"Future {C:planet}Celestial Packs{}", 
             "have {C:attention}+1{} {C:green}card{} and {C:green}choice{}"
