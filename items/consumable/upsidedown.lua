@@ -2433,6 +2433,7 @@ SMODS.Consumable {
 
 SMODS.Consumable {
 	key = 'medium_upsd',
+	config = { extra = { retriggers = 1 } },
 	set = 'upside_down_spectrals',
 	name = 'MeddeM',
 	loc_txt = {
@@ -2440,7 +2441,7 @@ SMODS.Consumable {
 		text = {
 			{
 				"{C:mult}Removes{} {C:attention}Purple Seal{} from all cards in {C:attention}deck{}",
-				"{X:money,C:white}X1.2${}",
+				"{C:attention}Affected{} cards gain {C:attention}+#1#{} retrigger",
 			},
 			{
 				"{C:inactive,E:1}Art by _TeKKen_{}"
@@ -2463,20 +2464,21 @@ SMODS.Consumable {
 	end,
 	loc_vars = function(self, info_queue, card) 
 		info_queue[#info_queue + 1] = SMODS.Seals['Purple']
+		return { vars = { card.ability.extra.retriggers } }
 	end,
 	use = function(self, card, area, copier)
-		for _, card in ipairs(G.playing_cards) do
-			if card.seal and card.seal == 'Purple' then
+		for _, card2 in ipairs(G.playing_cards) do
+			if card2.seal and card2.seal == 'Purple' then
 			    G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
-				    card:set_seal(nil, true, false)
-					if card.area == G.play or card.area == G.hand then
-						card:juice_up(0.3, 0.5)
-						play_sound('tarot1')
+				    card2:set_seal(nil, true, false)
+					card2.ability.perma_repetitions = (card2.ability.perma_repetitions or 0) + card.ability.extra.retriggers
+					if card2.area == G.play or card2.area == G.hand then
+						card2:juice_up(0.3, 0.5)
+						play_sound('may_permabonus')
 					end
 				return true end}))
 			end
 		end
-		may.hypermoney(0, 1.2, false)
 	end
 }
 
