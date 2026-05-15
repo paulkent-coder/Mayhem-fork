@@ -971,34 +971,37 @@ SMODS.Consumable {
 	loc_txt = {
 		name = "Vile",
 		text = {
-			"{C:attention}Randomize{} all cards {C:attention}held in hand{}",
+            "{C:attention}Randomize{} all {C:attention}selected{}", 
+            "cards {C:attention}held in hand{}", 
+			--[["{C:attention}Randomize{} all cards {C:attention}held in hand{}",
 			may.pager(40),
 			"{C:attention}Each{} randomized {C:attention}card{} has",
 			"a {C:green}#1# in #2#{} chance to",
-			"give {X:money,C:white}X#3#${}",
+			"give {X:money,C:white}X#3#${}",]]
 		}
 	},
-	config = { extra = { odds = 3, x_dollars = 1.1 } },
+	-- config = { extra = { odds = 3, x_dollars = 1.1 } },
 	pos = { x = 2, y = 2 },
 	atlas = 'placeholder',
 	cost = 4,
 	unlocked = true,
 	can_use = function(self, card)
-		return may.canuse() and #G.hand.cards ~= 0
+		return may.canuse() and #G.hand.highlighted > 0
 	end,
 	discovered = true,
-	loc_vars = function(self, info_queue, card)
+	--[[loc_vars = function(self, info_queue, card)
 		local normal, odds = SMODS.get_probability_vars(card, 1, card.ability.extra.odds, "Vile")
 		return { vars = { normal, odds, card.ability.extra.x_dollars } }
-	end,
+	end,]]
 	use = function(self, card, area, copier)
-		may.randomise(G.hand.cards, false)
+		may.randomise(G.hand.highlighted)
+		--[[may.randomise(G.hand.cards, false)
 		for k, v in pairs(G.hand.cards) do
 			if SMODS.pseudorandom_probability(card, "may_vile", 1, card.ability.extra.odds, "Vile") then
 				may.hypermoney(0, card.ability.extra.x_dollars, false)
 				card_eval_status_text(v, 'extra', nil, nil, nil, { message = 'X'..card.ability.extra.x_dollars..'$', colour = G.C.MONEY, delay = 0.45})
 			end
-		end
+		end]]
 	end,
 }
 
