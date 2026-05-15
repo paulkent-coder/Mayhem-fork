@@ -1984,9 +1984,12 @@ SMODS.Consumable {
 		name = "SigiS",
 		text = {
 			{
-				"{C:attention}Select{} a {C:attention}playing card{}",
+				--[["{C:attention}Select{} a {C:attention}playing card{}",
 				"{C:mult}Destroys{} all {C:attention}cards{} in {C:attention}full deck{} with {C:attention}that card's suit{}",
-				"{X:money,C:white}X2${}",
+				"{X:money,C:white}X2${}",]]
+				"Convert all cards held in hand to a single",
+				"random {C:attention}rank{}",
+				"{C:attention}Randomize{} their suits"
 			},
 			{
 				"{C:inactive,E:1}Art by _TeKKen_{}"
@@ -2000,30 +2003,30 @@ SMODS.Consumable {
 	discovered = true,
     no_grc = true, 
 	can_use = function(self, card)
-		return may.canuse() and G.hand and #G.hand.highlighted == (1 + (card.area == G.hand and 1 or 0))
+		return may.canuse() and #G.hand.cards ~= 0
 	end,
 	use = function(self, card, area, copier)
-		local other
-		for k, v in pairs(G.hand.highlighted) do 
-			if v ~= card then 
-				other = v
-			end 
-		end
-		local targets = {}
-		local suit = other.base.suit
-		for k, v in pairs(G.playing_cards) do
-			if v.base.suit == suit then
-                G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
-				    v:start_dissolve(nil, false)
-                return true end})) 
-				table.insert(targets, card)
-			end
-		end
-		may.hypermoney(0, 2)
-        G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
-            play_sound('may_event')
-        return true end}))
-		SMODS.calculate_context({ remove_playing_cards = true, removed = targets })
+        G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
+            play_sound('tarot1')
+            card:juice_up(0.3, 0.5)
+        return true end }))
+        for i=1, #G.hand.cards do
+            local percent = 1.15 - (i-0.999)/(#G.hand.cards-0.998)*0.3
+            G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() G.hand.cards[i]:flip();play_sound('card1', percent);G.hand.cards[i]:juice_up(0.3, 0.3);return true end }))
+        end
+		local _rank = pseudorandom_element(SMODS.Ranks, pseudoseed('sigil_upsd')).key
+        for i=1, #G.hand.cards do
+            G.E_MANAGER:add_event(Event({func = function()
+                local _card = G.hand.cards[i]
+                local _suit = pseudorandom_element(SMODS.Suits, pseudoseed('sigil_upsd')).key
+				SMODS.change_base(_card, _suit, _rank)
+            return true end }))
+        end
+		for i=1, #G.hand.cards do
+            local percent = 0.85 + (i-0.999)/(#G.hand.cards-0.998)*0.3
+            G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() G.hand.cards[i]:flip();play_sound('tarot2', percent, 0.6);G.hand.cards[i]:juice_up(0.3, 0.3);return true end }))
+        end
+        delay(0.5)
 	end
 }
 
