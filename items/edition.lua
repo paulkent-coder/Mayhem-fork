@@ -539,11 +539,13 @@ SMODS.Edition{
     end,
     calculate = function(self, card, context)
         if context.setting_blind then 
-            if G.consumeables and #G.consumeables.cards < G.consumeables.config.card_limit then 
-                G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
+            if G.consumeables and #G.consumeables.cards + (G.pending_consumables or 0) < G.consumeables.config.card_limit then 
+				G.pending_consumables = (G.pending_consumables or 0) + 1
+				G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
                     local choice = pseudorandom_element({'c_fool', 'c_may_dysnomia'}, pseudoseed('may_nostalgic'))
                     SMODS.add_card({ key = choice })
                     card_eval_status_text(card, 'extra', nil, nil, nil, { message = {(choice == 'c_fool' and '+The Fool' or '+Dysnomia')}, colour = (choice == 'c_fool' and G.C.SECONDARY_SET.Tarot or G.C.SECONDARY_SET.Planet), delay = 0.45})
+					G.pending_consumables = G.pending_consumables - 1
                 return true end}))
             end 
         end 
