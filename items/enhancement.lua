@@ -428,10 +428,13 @@ SMODS.Enhancement {
 	loc_txt = {
 		name = 'Fortune Card',
 		text = {
-			'{X:money,C:white}+X0.03${} per held', 
+			--[['{X:money,C:white}+X0.03${} per held', 
             '{C:mult}non-{}{C:dark_edition}Negative{} {C:purple}Tarot Card{}', 
 			'before scoring if {C:attention}card{} scores',
-            '{C:inactive}Currently X#1#${}'
+            '{C:inactive}Currently X#1#${}']]
+			'Create a {C:purple}Tarot Card{}', 
+			'before scoring if {C:attention}card{} scores',
+			'{C:inactive}Requires room{}'
 		}
 	},
 	pos = { x = 12, y = 0 },
@@ -439,29 +442,19 @@ SMODS.Enhancement {
 	weight = 0,
 	discovered = true,
 	atlas = 'enhancement',
-    loc_vars = function(self, info_queue, card)
-        local amount = 0
-        if G.consumeables then 
-			for k, v in pairs(G.consumeables.cards) do
-                if v:gc().set == 'Tarot' and ((not v.edition) or (v.edition and v.edition.key ~= 'e_negative')) then 
-                    amount = amount + v:getQty()
-                end
-            end
-        end
-        return { vars = { 1 + (amount * 0.03) } }
-    end, 
 	calculate = function(self, card, context)
 		if context.cardarea == G.play and context.before and table_hasvalue(context.scoring_hand, card) then
-            local amount = 0
-			for k, v in pairs(G.consumeables.cards) do
-                if v:gc().set == 'Tarot' and ((not v.edition) or (v.edition and v.edition.key ~= 'e_negative')) then 
-                    amount = amount + v:getQty()
-                end
-            end
-			return {
-				x_dollars = 1 + (amount * 0.03), 
-                card = card,
-			}
+			if G.consumeables.config.card_limit > #G.consumeables.cards + (G.pending_consumables or 0) then
+				G.pending_consumables = (G.pending_consumables or 0) + 1
+				G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.5, func = function()
+					G.pending_consumables = G.pending_consumables - 1
+					play_sound('timpani')
+					local card2 = create_card('Tarot', G.consumeables, nil, nil, nil, nil, nil, 'may_yellow_seal')
+					card2:add_to_deck()
+					G.consumeables:emplace(card2)
+					card:juice_up(0.3, 0.5)
+            	return true end})) 
+			end
 		end
 	end, 
     in_pool = function(self, args)
