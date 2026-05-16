@@ -274,9 +274,9 @@ SMODS.Enhancement {
 		name = 'Cardboard Card',
 		text = {
             {
-			    "If {C:attention}held in hand{} after hand is played, {C:attention}give{} all {C:attention}other{}",
-			    "{C:attention}Cardboard{} cards {C:attention}held in hand{}",
-			    "{X:attention,C:white}X4{} Nominal Chips"
+			    "If {C:attention}held in hand{} after hand is played,",
+				"permanently give all {C:attention}other{} {C:attention}Cardboard{} cards",
+				"{C:attention}held in hand{} {X:attention,C:white}4X{} their Nominal Chips"
             }, 
             {
                 '{C:inactive,E:1}Art by HuyCorn{}'
@@ -297,7 +297,8 @@ SMODS.Enhancement {
 			for i=1, #G.hand.cards, 1 do
 				if SMODS.has_enhancement(G.hand.cards[i], 'm_may_cardboard') and G.hand.cards[i] ~= card then
 					G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2, func = function()
-						G.hand.cards[i].ability.nominal_multiplier = (G.hand.cards[i].ability.nominal_multiplier or 0) + 4
+						local boost = 4 * G.hand.cards[i].base.nominal
+						G.hand.cards[i].ability.perma_bonus = (G.hand.cards[i].ability.perma_bonus or 0) + boost
 						G.hand.cards[i]:juice_up()
 						play_sound('may_nominal_chips')
 					return true end}))
