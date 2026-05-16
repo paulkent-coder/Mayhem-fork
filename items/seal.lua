@@ -230,8 +230,8 @@ SMODS.Seal {
 		name = 'White Seal',
 		label = 'White Seal',
 		text = {
-			"{X:attention,C:white}+X10{} Nominal Chips",
-			"when applied"
+			"Give this card {X:attention,C:white}2X{} its Nominal",
+			"Chips permanently when scored"
 		}
 	},
 	atlas = 'seal',
@@ -239,8 +239,14 @@ SMODS.Seal {
 	badge_colour = HEX('ffffff'),
 	sound = { sound = 'gold_seal', per = 1.2, vol = 0.4 },
 	calculate = function(self, card, context)
-		if card then
-			card.ability.nominal_multiplier = (card.ability.nominal_multiplier or 0) + 10
+		if context.cardarea == G.play and context.main_scoring then
+			local boost = 2 * card.base.nominal
+			card.ability.perma_bonus = (card.ability.perma_bonus or 0) + boost
+			return {
+				message = 'Upgraded!',
+				colour = G.C.CHIPS,
+				card = card
+			}
 		end
 	end
 }
