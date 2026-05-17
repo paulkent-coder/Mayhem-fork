@@ -1162,14 +1162,18 @@ SMODS.Consumable {
 SMODS.Consumable {
 	set = 'Planet',
 	key = 'mangas',
+	config = { extra = { limit = 20 } },
 	pos = { x = 1, y = 0 },
 	atlas = 'planet',
 	loc_txt = {
 		name = 'Mangas',
 		text = {
-			"Gain {C:green}double{} the {C:planet}level{} of a",
+			--[["Gain {C:green}double{} the {C:planet}level{} of a",
 			"{C:attention}random{} {C:purple}Poker Hand{} as {C:money}money{}",
 			"then set its {C:planet}level{} to {C:mult}1{}", 
+            "{C:inactive}Max of +$#1#{}"]]
+			"Gain the {C:planet}level{} of a {C:attention}random{}",
+			"{C:purple}Poker Hand{} as {C:money}money{}",
             "{C:inactive}Max of +$#1#{}"
 		}
 	},
@@ -1177,24 +1181,12 @@ SMODS.Consumable {
 		return may.canuse()
 	end,
     loc_vars =function(self, info_queue, card)
-		if G.GAME.blind then
-            return { vars = { math.max(100, to_big(G.GAME.dollars) * to_big(10)) } }
-		else 
-			return { vars = { '(current money X 10) or 100, whichever is bigger' } }
-		end
+		return { vars = { card.ability.extra.limit } }
     end, 
 	use = function(self, card)
 		local hand = may.rndhand()
-		local amount = math.min(to_big((G.GAME.hands[hand].level or 1) * 2), math.max(to_big(G.GAME.dollars) * to_big(10), 100))
+		local amount = math.min(to_big(G.GAME.hands[hand].level or 1), card.ability.extra.limit)
 		may.th(hand)
-		if to_big(G.GAME.hands[hand].level or 1) > to_big(1) then
-			may.set_hand_level(card, hand, nil, 1)
-		else
-			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'Level 1 or below!'}, colour = G.C.MULT, delay = 0.45})
-			G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2, func = function() 
-			    play_sound('tarot2')
-			return true end}))
-		end
 		ease_dollars(amount)
 		may.ch()
 		if Engulf and card.edition then 
@@ -1206,24 +1198,12 @@ SMODS.Consumable {
 		local total = 0
 		for i=1, number, 1 do
 			local hand = may.rndhand(hand)
-			total = total + math.min(to_big(G.GAME.hands[hand].level or 1) * 2), to_big(math.max(to_big(100), to_big(G.GAME.dollars) * to_big(10)))
-			may.set_hand_level(card, hand, true, 1)
+			total = total + math.min(to_big(G.GAME.hands[hand].level or 1), card.ability.extra.limit)
 			if Engulf and card.edition then 
 				Engulf.EditionHand(card, hand, card.edition, 1, true)
 			end
 		end
-		may.h('Random Hands', '...', '...', '')
-		G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2, func = function()
-			play_sound('may_eq_level')
-			card:juice_up(0.8, 0.5)
-		return true end}))
-		may.hlv(1)
-		G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2, func = function()
-			play_sound('tarot2')
-			card:juice_up(0.8, 0.5)
-		return true end}))
 		ease_dollars(total)
-		may.ch()
 	end
 }
 
