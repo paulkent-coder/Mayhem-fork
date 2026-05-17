@@ -89,10 +89,13 @@ SMODS.Joker {
 	loc_txt = {
 		name = 'Paper Shredder',
 		text = {
-            "{X:mult,C:white}X#2#{} Mult",
-			"{C:attention}After hand{} is played,",
-			"{C:mult}destroy{} a {C:attention}random card{}",
-			"held in hand and {C:mult}lose{} {X:mult,C:white}X#1#{} Mult",
+			{
+            	"{X:mult,C:white}X#2#{} Mult",
+				"{C:attention}After hand{} is played,",
+				"{C:mult}destroy{} a {C:attention}random card{}",
+				"held in hand and {C:mult}lose{} {X:mult,C:white}X#1#{} Mult",
+			},
+			may.add_fusion_text('Universal Collapse', 'Censorship', may.get_condition('censorship'))
 		}
 	},
 	config = { extra = { Xmult_gain = -.02, Xmult = 1 } },

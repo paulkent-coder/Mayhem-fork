@@ -339,6 +339,7 @@ may.fusions.conditions.little_prince = 'Played at least {C:attention}1 Royal Flu
 may.fusions.conditions.party_time = '{C:dark_edition}Prismatic Scaling{} or above active'
 may.fusions.conditions.diskus_kollectum = 'Holding at least {C:attention}70{} copies of {C:tarot}The Wheel of Fortune{}'
 may.fusions.conditions.bismuth_joker = '{C:mult}Destroyed{} at least {C:attention}50{} {C:dark_edition}Stone Cards{}'
+may.fusions.conditions.censorship = 'At most {C:attention}40{} cards in full deck'
 -- may.fusions.conditions.schematicum =  'Used at least {C:attention}20{} {C:spectral}Potents{} & {C:dark_edition}Transcendent Scaling{} or above active'
 
 may.fusions.conditions.acum_universum = 'At least {C:attention}33 Aces{} in full deck' 
@@ -458,6 +459,10 @@ end)
 
 may.fusions:add_fusion('j_may_bedrock_joker', nil, nil, 'j_stone', nil, nil, 'j_may_bismuth_joker', 1300, 'may_transcendent_joker', nil, 0, function()
 	return (G.GAME.may_stones_destroyed or 0) >= 50
+end)
+
+may.fusions:add_fusion('j_may_universal_collapse', nil, nil, 'j_may_paper_shredder', nil, nil, 'j_may_censorship', 1000, 'may_transcendent_joker', nil, 0, function()
+	return #G.playing_cards <= 40
 end)
 
 	-- Prismatic 

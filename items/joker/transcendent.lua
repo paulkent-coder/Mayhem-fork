@@ -525,3 +525,61 @@ SMODS.Joker {
         end
 	end
 }
+
+SMODS.Joker {
+	key = 'censorship',
+	loc_txt = {
+		name = {'Censorship', "{C:inactive,s:0.5}Universal Collapse + Paper Shredder{}"},
+		text = {
+			{
+            	"{X:mult,C:white}^#1#{} Mult",
+				"{C:mult}Destroy{} all {C:attention}discarded cards{}",
+				"and {C:attention}gain{} {X:mult,C:white}^#2#{} Mult for each",
+			}
+		}
+	},
+	config = { extra = { Emult = 1, Emult_gain = 0.5 } },
+	pos = { x = 1, y = 0 },
+	cost = 1000,
+	rarity = 'may_transcendent',
+	atlas = 'placeholder',
+	blueprint_compat = true,
+	demicoloncompat = true,
+	no_tree = true,
+    loc_vars = function(self, info_queue, card)
+        return {vars = {card.ability.extra.Emult, card.ability.extra.Emult_gain}}
+    end,
+    calculate = function(self, card, context)
+		if context.discard then
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "Emult",
+				scalar_value = "Emult_gain",
+                colour = G.C.MULT
+			})
+			return { remove = not SMODS.is_eternal(context.other_card) }
+		end
+		if context.joker_main then
+			return {
+				Emult_mod = card.ability.extra.Emult,
+				card = card,
+				message = '^'..number_format(card.ability.extra.Emult)..' Mult',
+				colour = G.C.MULT,
+			}
+		end
+		if context.forcetrigger then
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "Emult",
+				scalar_value = "Emult_gain",
+                colour = G.C.MULT
+			})
+			return {
+				Emult_mod = card.ability.extra.Emult,
+				card = card,
+				message = '^'..number_format(card.ability.extra.Emult)..' Mult',
+				colour = G.C.MULT,
+			}
+		end
+	end
+}
