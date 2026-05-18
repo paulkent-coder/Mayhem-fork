@@ -599,8 +599,8 @@ SMODS.Consumable {
 		local hand = may.rndhand()
 		may.th(hand)
 		if G.GAME.hands[hand].dollars then
-			may.ease_interest(-1, G.GAME.hands[hand].dollars)
-			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..G.GAME.hands[hand].dollars..' Interest'}, colour = G.C.DOLLARS, delay = 0.45})
+			may.ease_interest_cap(-1, G.GAME.hands[hand].dollars)
+			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..G.GAME.hands[hand].dollars..' Interest Cap'}, colour = G.C.DOLLARS, delay = 0.45})
 			G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.9, func = function()
 				card:juice_up(0.3, 0.5)
 			return true end}))
