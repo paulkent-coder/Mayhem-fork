@@ -586,7 +586,7 @@ SMODS.Consumable {
 		name = 'Haumea',
 		text = {
 			"Gain the {C:money}Dollars{} of a",
-			"{C:attention}random{} {C:purple}Poker Hand{} as {C:money}Interest{}",
+			"{C:attention}random{} {C:purple}Poker Hand{} as {C:money}Interest Cap{}",
 		}
 	},
 	can_use = function(self, card)
@@ -623,7 +623,7 @@ SMODS.Consumable {
 			local hand = may.rndhand()
 			may.th(hand)
 			if G.GAME.hands[hand].dollars then
-				may.ease_interest(-1, G.GAME.hands[hand].dollars)
+				may.ease_interest_cap(-1, G.GAME.hands[hand].dollars)
 				amount = amount + G.GAME.hands[hand].dollars
 			end
 			if Engulf and card.edition then 
@@ -631,7 +631,7 @@ SMODS.Consumable {
 				may.ch()
 			end 
 		end
-		card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..amount..' Interest'}, colour = G.C.DOLLARS, delay = 0.45})
+		card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..amount..' Interest Cap'}, colour = G.C.DOLLARS, delay = 0.45})
 		may.ch()
 	end,
 	in_pool = function(self, args)
