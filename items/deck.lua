@@ -282,13 +282,14 @@ SMODS.Back {
 	name = "Centurion Deck",
 	key = "centurion_deck",
 	atlas = 'placeholder',
-	config = { vouchers = { 'v_may_increment', 'v_may_increase', 'v_may_stardust' } },
+	config = { vouchers = { 'v_may_increment', 'v_may_increase', 'v_may_stardust', 'v_may_meteor' } },
 	pos = { x = 4, y = 2 },
 	loc_txt = {
 		name = "Centurion Deck",
 		text = {
 			"Start run with {C:attention,T:v_may_increment}Increment{},",
-			"{C:attention,T:v_may_increase}Increase{} and {C:attention,T:v_may_stardust}Stardust{}", 
+			"{C:attention,T:v_may_increase}Increase{}, {C:attention,T:v_may_stardust}Stardust{}",
+			"and {C:attention,T:v_may_meteor}Meteor{}",
 			"All {C:purple}Poker Hands{} start at",
 			"{C:planet}Level{} {C:attention}3{} and with",
 			"{X:purple,C:white}X2{} Mult & Chips",

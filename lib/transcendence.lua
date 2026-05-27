@@ -92,9 +92,9 @@ function may.calc_transcendence()
 		G.ARGS.push.may_true_music_volume = G.SETTINGS.SOUND.music_volume
 	end
 	if may.conf.TrEffects > 1 and is_number(SMODS.get_scoring_parameter('chips', true)) and is_number(SMODS.get_scoring_parameter('mult', true)) then 
-		if may.transcendence > 0 and G.hand then
+		if (may.transcendence or 0) > 0 and G.hand then
 			if is_number(SMODS.get_scoring_parameter('chips', true)) and is_number(SMODS.get_scoring_parameter('mult', true)) and to_big(G.GAME.current_scoring_calculation:func(SMODS.get_scoring_parameter('chips', true), SMODS.get_scoring_parameter('mult', true), true)) > to_big(0) then 
-				if may.transcendence > 0 then
+				if (may.transcendence or 0) > 0 then
 					if may.conf.TrParticles and G.transcendence_particles then
 						G.transcendence_particles.colours[2] = may.get_transcendence_color(may.transcendence)
 					end
@@ -586,7 +586,7 @@ function Game:update(dt)
 		G.ROOM.jiggle = G.ROOM.jiggle + G.ROOM.may_permajiggle
 	end
 	if G.hand and may.transcendence then 
-		if may.transcendence < 10 and may.conf.TrEffects > 2 then
+		if (may.transcendence or 0) < 10 and may.conf.TrEffects > 2 then
 			if may.conf.TrShakeUI then 
 			    G.hand_text_area.blind_chips:juice_up(0.01, math.random(-(may.transcendence or 0)/9, (may.transcendence or 0))/9)
 			    G.hand_text_area.mult:juice_up(0.01, math.random(-(may.transcendence or 0)/9, (may.transcendence or 0))/9)

@@ -96,12 +96,20 @@ end
 local vanf_gu = Game.update
 function Game:update(dt)
 	vanf_gu(self, dt)
-	--[[ Party Time background
-	if G.GAME.blind then
-		if (#SMODS.find_card('j_may_party_time') ~= 0 or #SMODS.find_card('j_may_aurora_rave') ~= 0 or #SMODS.find_card('j_may_planet_ibiza') ~= 0) and (may.transcendence or 0) == 0 and may.conf.JokerEffects then
-			ease_background_colour({ new_colour = copy_table(G.C.BLACK), special_colour = G.C.EDITION, contrast = 2 })
-		end	
-	end]]
+	if G.GAME and G.GAME.blind and not G.GAME.may_fusion_conditions then
+		G.GAME.may_fusion_conditions = {}
+		for k, v in pairs(may.fusions.recipes) do 
+			G.GAME.may_fusion_conditions[v.result_joker] = (v.condition or function() return true end)()
+		end
+	end
+end
+
+local vanf_scs = SMODS.calculate_context
+function SMODS.calculate_context(...)
+	if G.GAME and G.GAME.blind then 
+		may.update_fusion_conditions()
+	end
+	return vanf_scs(...)
 end
 
 local vanf_suph = SMODS.upgrade_poker_hands

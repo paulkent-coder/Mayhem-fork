@@ -96,7 +96,7 @@ Game.main_menu = function(change_context)
 				{ name = "time", ref_table = G.TIMERS, ref_value = "REAL_SHADER" },
 				{ name = "vort_speed", val = 0.4 },
 				{ name = "colour_1", ref_table = SMODS.Gradients, ref_value = may.conf.Mode == 1 and "may_col_mayhem_gradient" or "may_col_eternum_green" },
-				{ name = "colour_2", ref_table = G.C, ref_value = "BLACK" },
+				{ name = "colour_2", ref_table = G.C, ref_value = 'BLACK' },
 			},
 		}})
 		-- Add mod logo 

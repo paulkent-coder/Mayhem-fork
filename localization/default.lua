@@ -433,15 +433,6 @@ return {
 					"{C:inactive}3.2 Interest, $15 owned -> +$9.6{}"
 				},
 			},
-			may_retro_ascend_tutorial = {
-				name = "Retro Card Ascension",
-				text = {
-					"{C:retrocards}Retro Cards{} will {C:may_interdimensional,E:1}Ascend{} once their", 
-					"{C:mult}requirement{} reaches a certain {C:attention}threshold{}", 
-					"{C:may_interdimensional,E:1}Ascended{} {C:retrocards}Retro Cards{} give more {C:money}powerful{},", 
-					"{C:dark_edition}unconditional{} {C:green}bonuses{}"
-				},
-			}, 
 			may_ultrablind = {
 				name = "UltraBlind",
 				text = {
@@ -590,9 +581,9 @@ return {
 		    may_notif_talisman_d3 = 'Amulet instead of Talisman is recommended.',
 			
 			may_notif_smods_1 = 'Steamodded notice', 
-		    may_notif_smods_d1 = 'Mayhem is unstable with this version of Steamodded.', 
-		    may_notif_smods_d2 = 'It is recommended you use another SMODS version', 
-		    may_notif_smods_d3 = 'as crashes and glitches will be frequent.',
+		    may_notif_smods_d1 = 'Mayhem is incredibly unstable with Steamodded 1221a.', 
+		    may_notif_smods_d2 = 'It is recommended you use SMODS 1224a and above,', 
+		    may_notif_smods_d3 = 'as crashes will be frequent.',
 			
 			may_notif_welcome_1 = 'Welcome to Mayhem!', 
 		    may_notif_welcome_d1 = 'This is your first time playing Mayhem! Thanks!', 

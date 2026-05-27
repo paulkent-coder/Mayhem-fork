@@ -419,7 +419,7 @@ SMODS.Voucher {
 		name = "Hot",
 		text = {
 			"{C:attention}+1 Ante{}",
-			"{C:attention}+2{} {C:green}Vouchers{} in Shop"
+			"{C:attention}+1{} {C:green}Voucher{} in Shop"
 		}
 	},
 	pos = { x = 1, y = 0 },
@@ -430,11 +430,11 @@ SMODS.Voucher {
 	voucher_sellable = true,
 	redeem = function(self, card)
 		ease_ante(1)
-		SMODS.change_voucher_limit(2)
+		SMODS.change_voucher_limit(1)
 	end,
 	unredeem = function(self, card)
 		ease_ante(-1)
-		SMODS.change_voucher_limit(-2)
+		SMODS.change_voucher_limit(-1)
 	end,
 }
 
@@ -510,7 +510,7 @@ SMODS.Voucher {
 	},
 	pos = { x = 4, y = 0 },
 	atlas = '003_temp',
-	config = { extra = { mult = 0.2 } },
+	config = { extra = { mult = 1 } },
 	cost = 10,
 	unlocked = true,
 	loc_vars = function(self, info_queue, card)
@@ -538,7 +538,7 @@ SMODS.Voucher {
 	},
 	pos = { x = 2, y = 0 },
 	atlas = '003_temp',
-	config = { extra = { chips = 1, chips_gain = 0.05 } },
+	config = { extra = { chips = 5, chips_gain = 0.1 } },
 	cost = 10,
 	unlocked = true,
 	requires = {'v_may_increment'},
@@ -856,4 +856,53 @@ SMODS.Voucher {
         info_queue[#info_queue + 1] = G.P_CENTERS.p_may_b_jumbo_premium1
         info_queue[#info_queue + 1] = G.P_CENTERS.p_may_b_mega_premium1
 	end,
+}
+
+SMODS.Voucher {
+	key = 'upside_down_merchant',
+	loc_txt = {
+		name = "Upside Down Merchant",
+		text = {
+			"{C:dark_edition}Upside Down{} Consumables", 
+			"will appear {X:attention,C:white}#1#%{} more {C:green}frequently{}",
+			may.pager(), 
+			"{C:inactive}#2# in #3# >> #2# in #4#{}"
+		}
+	},
+	pos = { x = 2, y = 4 },
+	atlas = 'voucher',
+	config = { extra = { per = 35 } },
+	cost = 10,
+	unlocked = true,
+	loc_vars = function(self, info_queue, card)
+		return { vars = { card.ability.extra.per, G.GAME.probabilities.normal, (G.GAME.may_upsd_rate or 80), (G.GAME.may_upsd_rate or 80) - ((G.GAME.may_upsd_rate or 80) * card.ability.extra.per * 0.01) } }
+	end,
+	redeem = function(self)
+		G.GAME.may_upsd_rate = (G.GAME.may_upsd_rate or 80) - ((G.GAME.may_upsd_rate or 80) * card.ability.extra.per * 0.01)
+	end
+}
+
+SMODS.Voucher {
+	key = 'upside_down_tycoon',
+	loc_txt = {
+		name = "Upside Down Tycoon",
+		text = {
+			"{C:dark_edition}Upside Down{} Consumables", 
+			"will appear {X:attention,C:white}#1#%{} more {C:green}frequently{}", 
+			may.pager(55), 
+			"{C:inactive}#2# in #3# >> #2# in #4#{}"
+		}
+	},
+	pos = { x = 3, y = 4 },
+	atlas = 'voucher',
+	config = { extra = { per = 50 } },
+	cost = 10,
+	unlocked = true,
+	requires = { 'v_may_upside_down_merchant' }, 
+	loc_vars = function(self, info_queue, card)
+		return { vars = { card.ability.extra.per, G.GAME.probabilities.normal, (G.GAME.may_upsd_rate or 80), (G.GAME.may_upsd_rate or 80) - ((G.GAME.may_upsd_rate or 80) * card.ability.extra.per * 0.01) } }
+	end,
+	redeem = function(self)
+		G.GAME.may_upsd_rate = (G.GAME.may_upsd_rate or 80) - ((G.GAME.may_upsd_rate or 80) * card.ability.extra.per * 0.01)
+	end 
 }
