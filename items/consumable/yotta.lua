@@ -16,9 +16,7 @@ SMODS.Consumable {
 		text = {
 			{
 				"During a {C:attention}Blind{}, use for", 
-				"{X:money,C:white}^1.2${} and {X:attention,C:white}#1#5{} Blind Requirements", 
-				"{C:attention}Blind Size{} {C:dark_edition}hyperoperator{} is based", 
-				"on owned {C:dark_edition}Fusion{} {C:attention}Jokers{}"
+				"{X:money,C:white}^1.2${} and {X:attention,C:white}^5{} Blind Requirements"
 			},
 			{
 				"{C:inactive,E:1}Art by Pakins{}"
@@ -33,25 +31,6 @@ SMODS.Consumable {
     reserve = true, 
     immutable = true, 
     endless = true,
-	loc_vars = function(self, info_queue, card)
-		local N = 1
-		if G.jokers then
-		    for k, v in pairs(G.jokers.cards) do
-				if v:gc().rarity == 'may_hyperascendant' then
-					N = math.max(N, 35) 
-					break
-				elseif v:gc().rarity == 'may_surreal' then
-					N = math.max(N, 4)
-				elseif v:gc().rarity == 'may_ethereal' then
-					N = math.max(N, 3)
-					break
-				elseif v:gc().rarity == 'may_interdimensional' then
-					N = math.max(N, 2)
-				end
-			end
-		end
-		return { vars = { '{'..N..'}' } }
-	end,
 	can_use = function(self, card)
 		return may.canuse() and G.STATE == G.STATES.SELECTING_HAND
 	end,
@@ -61,25 +40,9 @@ SMODS.Consumable {
 	soul_rate = may.yottarate,
 	soul_set = 'Spectral',
 	use = function(self, card, area, copier)
-		local N = 1
-		if G.jokers then
-		    for k, v in pairs(G.jokers.cards) do
-				if v:gc().rarity == 'may_hyperascendant' then
-					N = math.max(N, 35) 
-					break
-				elseif v:gc().rarity == 'may_surreal' then
-					N = math.max(N, 4)
-				elseif v:gc().rarity == 'may_ethereal' then
-					N = math.max(N, 3)
-					break
-				elseif v:gc().rarity == 'may_interdimensional' then
-					N = math.max(N, 2)
-				end
-			end
-		end
 		may.hypermoney(1, 1.2, false)
         G.E_MANAGER:add_event(Event({trigger = 'before', func = function()
-			G.GAME.blind.chips = to_big(G.GAME.blind.chips):arrow(N, 5)
+			G.GAME.blind.chips = G.GAME.blind.chips ^ 5
 			G.GAME.blind.chip_text = number_format(G.GAME.blind.chips)
 			G.hand_text_area.blind_chips:juice_up()
 			play_sound('may_blind_size')
@@ -168,8 +131,8 @@ SMODS.Consumable {
 				"{C:mult}destroy{} it for various", 
 				"{C:dark_edition}Score Operator{} {C:green}increases{}", 
 				may.pager(),
-				"{X:may_interdimensional,C:white}Prismatic{}: +1, {X:may_ethereal,C:white}Demiurgic{}: +2,", 
-				"{X:may_hyperascendant,C:white}Transcendent{}: +10, {X:may_surreal,C:white}Opalescent{}: +15",
+				"{X:may_transcendent,C:white}Ethereal{}: +1, {X:may_interdimensional,C:white}Prismatic{}: +2,",
+				"{X:may_ethereal,C:white}Demiurgic{}: +3, {X:may_hyperascendant,C:white}Transcendent{}: +10, {X:may_surreal,C:white}Opalescent{}: +15",
 				"{C:attention}Joker{} must have one of the {C:attention}rarities{} above"
 			},
 			{
@@ -187,7 +150,7 @@ SMODS.Consumable {
     endless = true,
 	can_use = function(self, card)
         if G.jokers and #G.jokers.highlighted == 1 then 
-            return may.canuse() and (((G.jokers.highlighted[1]:may_is_fusion() and G.jokers.highlighted[1]:gc().rarity ~= 'may_mythic' and G.jokers.highlighted[1]:gc().rarity ~= 'may_transcendent') or G.jokers.highlighted[1]:gc().rarity == 'may_surreal') and G.jokers.highlighted[1]:gc().rarity ~= 'may_mystery') 
+            return may.canuse() and (((G.jokers.highlighted[1]:may_is_fusion() and G.jokers.highlighted[1]:gc().rarity ~= 'may_mythic') or G.jokers.highlighted[1]:gc().rarity == 'may_surreal') and G.jokers.highlighted[1]:gc().rarity ~= 'may_mystery') 
         end 
         return false
 	end,
@@ -199,18 +162,18 @@ SMODS.Consumable {
 	use = function(self, card, area, copier)
         local amount = 0
         if (G.jokers.highlighted[1]:may_is_fusion() and G.jokers.highlighted[1]:gc().rarity ~= 'may_mythic') or G.jokers.highlighted[1]:gc().rarity == 'may_surreal' then
-            if G.jokers.highlighted[1]:gc().rarity == 'may_surreal' then 
+            if G.jokers.highlighted[1]:gc().rarity == 'may_transcendent' then 
+                amount = amount + 1
+            elseif G.jokers.highlighted[1]:gc().rarity == 'may_surreal' or G.jokers.highlighted[1]:gc().rarity == 'may_ethereal' then 
                 amount = amount + 15
             elseif G.jokers.highlighted[1]:gc().rarity == 'may_interdimensional' then 
-                amount = amount + 1
+                amount = amount + 2
             elseif G.jokers.highlighted[1]:gc().rarity == 'may_hyperascendant' then
                 amount = amount + 10
-            elseif G.jokers.highlighted[1]:gc().rarity == 'may_ethereal' then
-				amount = amount + 2
-			end 
+            end 
             G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2, func = function()
                 G.jokers.highlighted[1]:start_dissolve()
-                play_sound('may_big_score1')
+                play_sound('may_big_score1', 0.5, 1)
                 G.ROOM.jiggle = G.ROOM.jiggle + 3
             return true end}))
         end

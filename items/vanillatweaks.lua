@@ -222,43 +222,62 @@ SMODS.Joker:take_ownership('j_stone', {
     end
 })
 
+SMODS.Joker:take_ownership('j_satellite', {
+	rarity = 3
+})
+
+SMODS.Joker:take_ownership('j_ring_master', {
+	rarity = 3, 
+	endless = true, 
+	in_pool = function(self, args)
+        return G.GAME.may_endless_mode, { allow_duplicates = false }
+    end
+})
+
 -- Rework High Priestess and The Fool 
 SMODS.Consumable:take_ownership('c_high_priestess', {
+	config = { extra = { max_highlighted = 2 } },
     loc_txt = {
         name = 'The High Priestess', 
         text = {
-            "Convert all {C:attention}selected{}", 
+            "Convert up to {C:attention}#1#{} selected", 
             "cards {C:attention}held in hand{}", 
-            "into random", 
-			"{C:tarot}Tarot{} or {C:planet}Planet{} {C:dark_edition}CCDs{}"
+            "into random {C:tarot}Tarot{} {C:dark_edition}CCDs{}"
         }
     }, 
     loc_vars = function(self, info_queue, card)
         info_queue[#info_queue + 1] = { key = 'may_ccd_tutorial', set = 'Other' }
+		return { vars = { card.ability.extra.max_highlighted } }
     end, 
     can_use = function(self, card)
-        return may.canuse() and #G.hand.highlighted > 0
+        return may.canuse() and #G.hand.highlighted <= (card.ability.max_highlighted + (card.area == G.hand and 1 or 0)) and #G.hand.highlighted > (card.area == G.hand and 1 or 0)
     end, 
     use = function(self, card, copier)
 		local pool = {}
 		for k, v in pairs(G.P_CENTER_POOLS.Tarot) do
 			table.insert(pool, v)
 		end 
-		for k, v in pairs(G.P_CENTER_POOLS.Planet) do
-			table.insert(pool, v)
+		local targets = {}
+		for k, v in pairs(G.hand.highlighted) do
+			if v ~= card then 
+				table.insert(targets, v)
+				if # targets >= card.ability.extra.max_highlighted then 
+					break
+				end 
+			end 
 		end
         G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
 			play_sound('tarot1')
 			card:juice_up(0.3, 0.5)
 		return true end }))
-		for i=1, #G.hand.highlighted do
-			local percent = 1.15 - (i-0.999)/(#G.hand.highlighted-0.998)*0.3
-			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() G.hand.highlighted[i]:flip();play_sound('card1', percent);G.hand.highlighted[i]:juice_up(0.3, 0.3);return true end }))
+		for i=1, #targets do
+			local percent = 1.15 - (i-0.999)/(#targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() targets[i]:flip();play_sound('card1', percent);targets[i]:juice_up(0.3, 0.3);return true end }))
 		end
 		delay(0.2)
-		for i=1, #G.hand.highlighted do
-			local percent = 0.85 + (i-0.999)/(#G.hand.highlighted-0.998)*0.3
-			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() G.hand.highlighted[i]:flip();G.hand.highlighted[i]:set_ability(may.random_consumable('may_hp', nil, 'c_high_priestess', pool, true), true, nil);play_sound('tarot2', percent);G.hand.highlighted[i]:juice_up(0.3, 0.3);G.hand.highlighted[i].highlighted = false;return true end }))
+		for i=1, #targets do
+			local percent = 0.85 + (i-0.999)/(targets-0.998)*0.3
+			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() targets[i]:flip();targets[i]:set_ability(may.random_consumable('may_hp', nil, 'c_high_priestess', pool, true), true, nil);play_sound('tarot2', percent);targets[i]:juice_up(0.3, 0.3);targets[i].highlighted = false;return true end }))
 		end
         G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
             G.hand:unhighlight_all()
@@ -419,9 +438,6 @@ SMODS.Joker:take_ownership('j_perkeo', {
 
 -- Make the following discovered and unlocked by default for the intro
 may.intro_unlocks = {'b_blue', 'b_green', 'b_black', 'b_yellow'}
-SMODS.Joker:take_ownership('j_sly', {
-	discovered = true
-}, true)
 
 for k, v in pairs(may.intro_unlocks) do
     SMODS.Back:take_ownership(v, {
