@@ -236,7 +236,7 @@ SMODS.Joker {
 			for k, v in pairs(G.hand.cards) do
 				if v.ability.name == 'Steel Card' then
 					may.th(G.GAME.current_round.current_hand.handname)
-					G.GAME.hands[G.GAME.current_round.current_hand.handname or 'High Card'].mult = G.GAME.hands[G.GAME.current_round.current_hand.handname or 'High Card'].mult * card.ability.extra.Xmult
+					G.GAME.hands[context.scoring_name].mult = G.GAME.hands[context.scoring_name].mult * card.ability.extra.Xmult
 					delay(0.5)
 					Q(function() card:juice_up(.2, .3) return true end)
 					G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, func = function()
@@ -1007,17 +1007,15 @@ SMODS.Joker {
 		text = {
 			{
 				"Played {C:clubs}Clubs{} have a {C:green}#1# in #2#{} chance",
-				"to create a random {C:attention}Tag{} if played {C:purple}Poker Hand{}", 
-				"is {C:mult}not{} your {C:attention}most played{}", 
-				may.pager(), 
-				"{C:inactive}#3#{}"
+				"to give {C:attention}+#3# Card Selection Limit{}",
+				"if {C:attention}Hand Size{} is {C:attention}bigger{} than {X:attention,C:white}X#4#{} {C:attention}Card Selection Limit{}",
 			},
 			{
 				"{C:inactive,E:1}Art & original idea by _TeKKen_{}"
 			},
 		}
 	},
-	config = { extra = { odds = 6 } },
+	config = { extra = { odds = 6, selectionlimit = 1, multiplier = 0.5 } },
 	pos = { x = 5, y = 8 },
 	cost = 6,
 	rarity = 3,
@@ -1027,25 +1025,25 @@ SMODS.Joker {
 	demicoloncompat = true,
 	atlas = 'joker1',
 	loc_vars = function(self, info_queue, card)
-        return { vars = { (G.GAME.probabilities.normal or 1), card.ability.extra.odds, localize(may.favhand(), 'poker_hands') } }
+        return {vars = { (G.GAME.probabilities.normal or 1), card.ability.extra.odds, card.ability.extra.selectionlimit, card.ability.extra.multiplier }}
     end,
     calculate = function(self, card, context)
 		if (context.individual and context.cardarea == G.play) or (context.individual and context.cardarea == G.play and context.blueprint) then
-			if context.scoring_name ~= may.favhand() then
+			if G.hand.config.card_limit > G.hand.config.highlighted_limit * card.ability.extra.multiplier then
 				if context.other_card:is_suit('Clubs') then
 					if pseudorandom('may_pesto') < G.GAME.probabilities.normal / card.ability.extra.odds then
-						may.random_tag(true)
+						G.hand:change_max_highlight(card.ability.extra.selectionlimit)
 						return {
-							message = '+1 Tag'
+							message = '+'..card.ability.extra.selectionlimit..' Card Selection Limit'
 						}
 					end
 				end
 			end
 		end
 		if context.forcetrigger then
-			may.random_tag(true)
+			G.hand:change_max_highlight(card.ability.extra.selectionlimit)
 			return {
-				message = '+1 Tag'
+				message = '+'..card.ability.extra.selectionlimit..' Card Selection Limit'
 			}
 		end
 	end

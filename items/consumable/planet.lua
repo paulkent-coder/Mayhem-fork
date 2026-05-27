@@ -440,6 +440,7 @@ SMODS.Consumable {
 				play_sound('card1')
 			return true end}))
 		end
+		SMODS.calculate_context({ playing_card_added = true, cards = created })
 	end,
 	bulk_use = function(self, card, area, copier, number)
 		local planet = may.planethand(may.favhand()) or 'c_may_tartarus'
@@ -486,6 +487,7 @@ SMODS.Consumable {
 				play_sound('card1')
 			return true end}))
 		end
+		SMODS.calculate_context({ playing_card_added = true, cards = created })
 	end
 }
 
@@ -495,7 +497,7 @@ SMODS.Consumable {
 	pos = { x = 2, y = 3 },
 	atlas = 'planet',
 	ignore_allplanets = true,
-	config = { extra = { levels = 3, cards = 3 } },
+	config = { extra = { levels = 3, cards = 2 } },
 	set_card_type_badge = function(self, card, badges)
 		badges[1] = create_badge('Gonggongan Moon', get_type_colour(self or card.config, card), nil, 1.2)
 	end,
@@ -539,6 +541,7 @@ SMODS.Consumable {
 			end
 		return true end}))
 		may.ch()
+		SMODS.calculate_context({ playing_card_added = true, cards = created })
 	end,
 	bulk_use = function(self, card, area, copier, number)
 		local created = {}
@@ -565,6 +568,7 @@ SMODS.Consumable {
 			end
 		return true end}))
 		may.ch()
+		SMODS.calculate_context({ playing_card_added = true, cards = created })
 	end
 }
 

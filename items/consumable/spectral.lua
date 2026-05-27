@@ -261,7 +261,6 @@ SMODS.Consumable {
 		return may.canuse() and #G.hand.highlighted <= (card.ability.max_highlighted + (card.area == G.hand and 1 or 0)) and #G.hand.highlighted > (card.area == G.hand and 1 or 0)
 	end,
 	discovered = true,
-	endless = true,
 	loc_vars = function(self, info_queue, card)
 		info_queue[#info_queue + 1] = SMODS.Seals[card.ability.extra]
 		return { vars = { card.ability.max_highlighted or self.config.max_highlighted } }
@@ -281,10 +280,7 @@ SMODS.Consumable {
 		G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2,func = function() 
 			G.hand:unhighlight_all() 
 		return true end}))
-	end, 
-	in_pool = function(self, args)
-        return G.GAME.may_endless_mode, { allow_duplicates = false }
-    end
+	end
 }
 
 SMODS.Consumable {
@@ -615,7 +611,8 @@ SMODS.Consumable {
 	end
 }
 
-SMODS.Consumable {
+-- YOUR REIGN OF TERROR IS OVER
+--[[SMODS.Consumable {
 	key = 'warp',
 	set = 'Spectral',
 	loc_txt = {
@@ -643,7 +640,7 @@ SMODS.Consumable {
 		G.GAME.may_warp_price = (G.GAME.may_warp_price or 30) * 2
 		ease_ante(card.ability.extra.ante)
 	end
-}
+}]] 
 
 SMODS.Consumable {
 	key = 'deal',

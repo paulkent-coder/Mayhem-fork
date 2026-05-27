@@ -322,7 +322,7 @@ SMODS.current_mod.extra_tabs = function()
 						}},
 						{n=G.UIT.R, config={}, nodes={
 							{n = G.UIT.C, config = { align = "c", padding = 0 }, nodes = {
-								{ n = G.UIT.T, config = { text = 'Activate Interdimensional Scaling when reroll price reaches $1e100', scale = 0.35, colour = G.C.UI.TEXT_LIGHT }},
+								{ n = G.UIT.T, config = { text = 'Activate Prismatic Scaling when reroll price reaches $1e100', scale = 0.35, colour = G.C.UI.TEXT_LIGHT }},
 							}},
 							{n = G.UIT.C, config = { align = "cm", padding = 0.05 }, nodes = {
 							    create_toggle{ col = true, label = "", scale = 0.85, w = 0, shadow = true, ref_table = may.conf, ref_value = "reroll_punishment" },
@@ -330,7 +330,7 @@ SMODS.current_mod.extra_tabs = function()
 						}},
 						{n=G.UIT.R, config={}, nodes={
 							{n = G.UIT.C, config = { align = "c", padding = 0 }, nodes = {
-								{ n = G.UIT.T, config = { text = 'Activate Surreal Scaling when reroll threshold is reached 5 times in a row', scale = 0.35, colour = G.C.UI.TEXT_LIGHT }},
+								{ n = G.UIT.T, config = { text = 'Activate Opalescent Scaling when reroll threshold is reached 5 times in a row', scale = 0.35, colour = G.C.UI.TEXT_LIGHT }},
 							}},
 							{n = G.UIT.C, config = { align = "cm", padding = 0.05 }, nodes = {
 								create_toggle{ col = true, label = "", scale = 0.85, w = 0, shadow = true, ref_table = may.conf, ref_value = "threshold_punishment" },
