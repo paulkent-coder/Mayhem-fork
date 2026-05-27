@@ -1,15 +1,15 @@
 -- Copy and paste from FusionJokers, specificially the fork made by lshtech: https://github.com/lshtech/Fusion-Jokers
 
 G.localization.misc.dictionary["b_fuse"] = "FUSE"
-may.fusions = {}
-may.fusions.recipes = {}
+may.fusions = { recipes = { } }
 
 function may.fusions:add_fusion(joker1, carry_stat1, extra1, joker2, carry_stat2, extra2, result_joker, cost, sound, code, shake, condition)
 	table.insert(self.recipes, 
 		{ jokers = {
 			{ name = joker1, carry_stat = carry_stat1, extra_stat = extra1 },
 			{ name = joker2, carry_stat = carry_stat2, extra_stat = extra2 }
-		}, result_joker = result_joker, cost = cost, sound = sound, code = code, shake = shake, condition = condition})
+		}, result_joker = result_joker, cost = cost, sound = sound, code = code, shake = shake, condition = condition}
+	)
 end
 
 local function has_joker(val, start_pos)
@@ -172,7 +172,7 @@ function Card:may_fuse_card()
 end
 
 function Card:may_can_fuse_card()
-	for _, fusion in ipairs(may.fusions.recipes) do
+	--[[for _, fusion in ipairs(may.fusions.recipes) do
 		if to_big(G.GAME.dollars) >= to_big(fusion.cost) * (G.GAME.may_fusion_price_multiplier or 1) then
 			if fusion.condition then
 				if fusion.condition() then
@@ -208,17 +208,46 @@ function Card:may_can_fuse_card()
 			end
 		end
 	end 
+	return false]] 
+	if self:gc() and may.is_fusable(self:gc()) then
+		local fusion 
+		local other
+		for k, v in pairs(may.fusions.recipes) do
+			if v.jokers[1].name == self:gc().key then
+				fusion = v
+				other = v.jokers[2].name
+				break
+			elseif v.jokers[2].name == self:gc().key then
+				fusion = v
+				other = v.jokers[1].name
+				break
+			end
+		end
+		if to_big(G.GAME.dollars) >= to_big(fusion.cost) * (G.GAME.may_fusion_price_multiplier or 1) then
+			if G.GAME.may_fusion_conditions[fusion.result_joker] == true then
+				local instability_check
+				if fusion.jokers[1].name == 'j_may_universal_collapse' or fusion.jokers[2].name == 'j_may_universal_collapse' then
+					instability_check = (G.GAME.may_instability or 0) >= 5
+				else
+					instability_check = true
+				end
+				if instability_check then
+					return may.has_card(other)
+				end
+			end
+		end
+	end
 	return false
 end
 
 function Card:may_get_card_fusion()
-	for _, fusion in ipairs(may.fusions.recipes) do
-		for _, joker in ipairs(fusion.jokers) do
-			if joker.name == self.config.center_key then
-				return fusion
+	if self.gc then
+		for k, v in pairs(may.fusions.recipes) do 
+			if self:gc().key == v.jokers[1].name or self:gc().key == v.jokers[2].name then
+				return v
 			end
 		end
-	end 
+	end
     return nil
 end
 
@@ -240,7 +269,8 @@ end
 local use_and_sell_buttonsref = G.UIDEF.use_and_sell_buttons
 function G.UIDEF.use_and_sell_buttons(card)
 	local retval = use_and_sell_buttonsref(card)	
-	if card.area and card.area.config.type == 'joker' and card.ability.set == 'Joker' and card.ability.may_fusion and card:gc().key ~= 'j_may_universal_collapse' then
+	if card.area and card.area.config.type == 'joker' and card.ability.set == 'Joker' and card:may_get_card_fusion() and card:gc().key ~= 'j_may_universal_collapse' then
+		card.fusion_cost = card:may_get_card_fusion().cost * (G.GAME.may_fusion_price_multiplier or 1)
 		local fuse = 
 		{n=G.UIT.C, config={align = "cr"}, nodes={ 
 			{n=G.UIT.C, config={ref_table = card, align = "cr",maxw = 1.25, padding = 0.1, r=0.08, minw = 1.25, hover = true, shadow = true, colour = G.C.GOLD, one_press = true, button = 'sell_card', func = 'may_can_fuse_card'}, nodes={
@@ -282,16 +312,14 @@ local updateref = Card.update
 function Card:update(dt)
 	updateref(self, dt)
 	if G.STAGE == G.STAGES.RUN then
-		if self:may_get_card_fusion() ~= nil then
-			self.ability.may_fusion = self.ability.may_fusion or {}
-			local my_fusion = self:may_get_card_fusion()
-			self.fusion_cost = my_fusion.cost * (G.GAME.may_fusion_price_multiplier or 1)
-			if self:may_can_fuse_card() and not self.ability.may_fusion.jiggle then 
-				juice_card_until(self, function(card) return (card:may_can_fuse_card()) end, true)
-				self.ability.may_fusion.jiggle = true
-			end
-			if not self:may_can_fuse_card() and self.ability.may_fusion.jiggle then 
-				self.ability.may_fusion.jiggle = false
+		if self:may_get_card_fusion() then
+			if (self:may_get_card_fusion().condition or function() return true end)() then 
+				if not self.fusion_juice then
+					juice_card_until(self, function(card) return (card and card:may_can_fuse_card()) end, true)
+					self.fusion_juice = true
+				end
+			else 
+				self.fusion_juice = nil
 			end
 		end
 	end
@@ -324,6 +352,13 @@ function may.is_fusable(center)
 	return false
 end
 
+function may.update_fusion_conditions()
+	G.GAME.may_fusion_conditions = G.GAME.may_fusion_conditions or {}
+	for k, v in pairs(may.fusions.recipes) do 
+		G.GAME.may_fusion_conditions[v.result_joker] = (v.condition or function() return true end)()
+	end
+end
+
 -- Fusion conditions
 may.fusions.conditions = {}
 
@@ -338,7 +373,7 @@ may.fusions.conditions.storm = 'Used at least {C:attention}20{} {C:planet}Planet
 may.fusions.conditions.little_prince = 'Played at least {C:attention}1 Royal Flush{}'
 may.fusions.conditions.party_time = '{C:dark_edition}Prismatic Scaling{} or above active'
 may.fusions.conditions.diskus_kollectum = 'Holding at least {C:attention}70{} copies of {C:tarot}The Wheel of Fortune{}'
-may.fusions.conditions.bismuth_joker = '{C:mult}Destroyed{} at least {C:attention}50{} {C:dark_edition}Stone Cards{}'
+may.fusions.conditions.bismuth_joker = '{C:mult}Destroyed{} at least {C:attention}40{} {C:dark_edition}Stone Cards{}'
 -- may.fusions.conditions.schematicum =  'Used at least {C:attention}20{} {C:spectral}Potents{} & {C:dark_edition}Transcendent Scaling{} or above active'
 
 may.fusions.conditions.acum_universum = 'At least {C:attention}33 Aces{} in full deck' 
@@ -346,18 +381,18 @@ may.fusions.conditions.kepler = 'Have a {C:purple}Poker Hand{} with at least {C:
 may.fusions.conditions.diskus_kollectum_maximus = 'Holding at least {C:attention}140{} copies of {C:tarot}The Wheel of Fortune{}'
 may.fusions.conditions.world_destroyer = 'Used at least {C:attention}50{} {C:planet}Planet Cards{}'
 may.fusions.conditions.aurora_rave = '{C:dark_edition}Demiurgic Scaling{} or above active'
-may.fusions.conditions.rocco_pfilosofia = '{C:mult}Destroyed{} at least {C:attention}120{} {C:dark_edition}Stone Cards{}'
+may.fusions.conditions.rocco_pfilosofia = '{C:mult}Destroyed{} at least {C:attention}70{} {C:dark_edition}Stone Cards{}'
 
 may.fusions.conditions.acum_multiplexum = 'At least {C:attention}77 Aces{} in full deck' 
 may.fusions.conditions.keplers_dream = 'Have a {C:purple}Poker Hand{} with at least {C:planet}level{} {C:attention}500{}' 
 may.fusions.conditions.planet_ibiza = 'At least {C:attention}70{} {C:dark_edition}Enhanced{} playing cards'
 may.fusions.conditions.diskus_distrukum = 'Holding at least {C:attention}1400{} copies of {C:tarot}The Wheel of Fortune{}'
 may.fusions.conditions.astral_expunger = 'Used at least {C:attention}50{} {C:tarot}Tarot Cards{}'
-may.fusions.conditions.infinity_stone = '{C:mult}Destroyed{} at least {C:attention}250{} {C:dark_edition}Stone Cards{}'
+may.fusions.conditions.infinity_stone = '{C:mult}Destroyed{} at least {C:attention}130{} {C:dark_edition}Stone Cards{}'
 
 may.fusions.conditions.spadus = 'Have a {C:purple}Poker Hand{} with at least {C:planet}level{} {C:attention}25,000{}'
 may.fusions.conditions.rondo_discoteca = 'Used at least {C:attention}100{} {C:planet}Planet Cards{} & {C:dark_edition}Score Operator{} level is {C:attention}3{} or above'
-may.fusions.conditions.zodium_calamitas = 'Used at least {C:attention}100{} {C:tarot}Tarot Cards{} & {C:mult}destroyed{} at least {C:attention}400{} {C:dark_edition}Stone Cards{}'
+may.fusions.conditions.zodium_calamitas = 'Used at least {C:attention}100{} {C:tarot}Tarot Cards{} & {C:mult}destroyed{} at least {C:attention}200{} {C:dark_edition}Stone Cards{}'
 
 function may.get_condition(key)
 	return may.fusions.conditions[key]
@@ -385,8 +420,11 @@ may.fusions:add_fusion('j_may_mana_orb', nil, nil, 'j_may_hierarchy', nil, nil, 
 		if v.config.center.key ~= 'c_base' then
 			count = count + 1
 		end
+		if count >= 25 then
+			return true
+		end
 	end
-	return count >= 25
+	return false
 end)
 
 may.fusions:add_fusion('j_may_granite_joker', nil, nil, 'j_marble', nil, nil, 'j_may_bedrock_joker', 130, 'may_mythic_joker', nil, 0, function()
@@ -409,9 +447,12 @@ may.fusions:add_fusion('j_may_universal_collapse', nil, nil, 'j_may_hurley', nil
 	for k, v in pairs(G.playing_cards) do
 		if v:get_id() == 10 then
 			count = count + 1
+			if count >= 20 then 
+				return true
+			end
 		end
 	end
-	return count >= 20
+	return false
 end)
 
 may.fusions:add_fusion('j_may_universal_collapse', nil, nil, 'j_may_nebula', nil, nil, 'j_may_cosmos', 1000, 'may_transcendent_joker', nil, 0, function()
@@ -428,9 +469,12 @@ may.fusions:add_fusion('j_may_universal_collapse', nil, nil, 'j_may_aaaa', nil, 
 	for k, v in pairs(G.playing_cards) do
 		if v:get_id() == 14 then
 			count = count + 1
+			if count >= 11 then 
+				return true
+			end
 		end
 	end
-	return count >= 11
+	return false
 end)
 
 may.fusions:add_fusion('j_may_universal_collapse', nil, nil, 'j_may_destroyer', nil, nil, 'j_may_storm', 1300, 'may_transcendent_joker', nil, 0, function()
@@ -451,13 +495,16 @@ may.fusions:add_fusion('j_may_diskus', nil, nil, 'j_may_collectionist', nil, nil
 	for k, v in pairs(G.consumeables.cards) do
 		if v:gc().key == 'c_wheel_of_fortune' then 
 			count = count + v:getQty()
+			if count >= 70 then 
+				return true
+			end
 		end
 	end
-	return count >= 70
+	return false 
 end)
 
 may.fusions:add_fusion('j_may_bedrock_joker', nil, nil, 'j_stone', nil, nil, 'j_may_bismuth_joker', 1300, 'may_transcendent_joker', nil, 0, function()
-	return (G.GAME.may_stones_destroyed or 0) >= 50
+	return (G.GAME.may_stones_destroyed or 0) >= 40
 end)
 
 	-- Prismatic 
@@ -467,9 +514,12 @@ may.fusions:add_fusion('j_may_universal_collapse', nil, nil, 'j_may_acum', nil, 
 	for k, v in pairs(G.playing_cards) do
 		if v:get_id() == 14 then
 			count = count + 1
+			if count >= 33 then 
+				return true
+			end
 		end
 	end
-	return count >= 33
+	return false
 end)
 
 may.fusions:add_fusion('j_may_universal_collapse', nil, nil, 'j_may_cosmos', nil, nil, 'j_may_kepler', 10000, 'may_interdimensional_joker', nil, 0.8, function()
@@ -487,9 +537,12 @@ may.fusions:add_fusion('j_may_diskus_kollectum', nil, nil, 'j_may_collectors_edi
 	for k, v in pairs(G.consumeables.cards) do
 		if v:gc().key == 'c_wheel_of_fortune' then 
 			count = count + v:getQty()
+			if count >= 140 then 
+				return true
+			end
 		end
 	end
-	return count >= 140
+	return false
 end)
 
 may.fusions:add_fusion('j_may_universal_collapse', nil, nil, 'j_may_storm', nil, nil, 'j_may_world_destroyer', 10000, 'may_interdimensional_joker', nil, 0.8, function()
@@ -501,7 +554,7 @@ may.fusions:add_fusion('j_may_universal_collapse', nil, nil, 'j_may_party_time',
 end)
 
 may.fusions:add_fusion('j_may_bismuth_joker', nil, nil, 'j_may_cement_joker', nil, nil, 'j_may_rocco_pfilosofia', 13000, 'may_interdimensional_joker', nil, 0.8, function()
-	return (G.GAME.may_stones_destroyed or 0) >= 120
+	return (G.GAME.may_stones_destroyed or 0) >= 70
 end)
 
 	-- Demiurgic 
@@ -511,9 +564,12 @@ may.fusions:add_fusion('j_may_universal_collapse', nil, nil, 'j_may_acum_univers
 	for k, v in pairs(G.playing_cards) do
 		if v:get_id() == 14 then
 			count = count + 1
+			if count >= 77 then 
+				return true
+			end
 		end
 	end
-	return count >= 77
+	return false
 end)
 
 may.fusions:add_fusion('j_may_universal_collapse', nil, nil, 'j_may_kepler', nil, nil, 'j_may_keplers_dream', 1e6, 'may_ethereal_joker', nil, 1, function()
@@ -531,9 +587,12 @@ may.fusions:add_fusion('j_may_universal_collapse', nil, nil, 'j_may_diskus_kolle
 	for k, v in pairs(G.consumeables.cards) do
 		if v:gc().key == 'c_wheel_of_fortune' then 
 			count = count + v:getQty()
+			if count >= 1400 then 
+				return true
+			end
 		end
 	end
-	return count >= 1400
+	return false
 end)
 
 may.fusions:add_fusion('j_may_wizard_university', nil, nil, 'j_may_aurora_rave', nil, nil, 'j_may_planet_ibiza', 5e6, 'may_ethereal_joker', nil, 1, function()
@@ -541,9 +600,12 @@ may.fusions:add_fusion('j_may_wizard_university', nil, nil, 'j_may_aurora_rave',
 	for k, v in pairs(G.playing_cards) do
 		if v.config.center.key ~= 'c_base' then
 			count = count + 1
+			if count >= 70 then 
+				return true
+			end
 		end
 	end
-	return count >= 70
+	return false
 end)
 
 may.fusions:add_fusion('j_may_zodiac', nil, nil, 'j_may_world_destroyer', nil, nil, 'j_may_astral_expunger', 1e6, 'may_ethereal_joker', nil, 1, function()
@@ -551,7 +613,7 @@ may.fusions:add_fusion('j_may_zodiac', nil, nil, 'j_may_world_destroyer', nil, n
 end)
 
 may.fusions:add_fusion('j_may_rocco_pfilosofia', nil, nil, 'j_may_universal_collapse', nil, nil, 'j_may_infinity_stone', 1.3e6, 'may_ethereal_joker', nil, 1, function()
-	return (G.GAME.may_stones_destroyed or 0) >= 250
+	return (G.GAME.may_stones_destroyed or 0) >= 130
 end)
 
 	-- Transcendent 
@@ -574,5 +636,5 @@ may.fusions:add_fusion('j_may_diskus_distruktum', nil, nil, 'j_may_planet_ibiza'
 end)
 
 may.fusions:add_fusion('j_may_infinity_stone', nil, nil, 'j_may_astral_expunger', nil, nil, 'j_may_zodium_calamitas', 1.3e8, 'may_hyperascendant_joker', nil, 1.5, function()
-	return (G.GAME.may_stones_destroyed or 0) >= 400 and may.ctu('Tarot') >= 100
+	return (G.GAME.may_stones_destroyed or 0) >= 200 and may.ctu('Tarot') >= 100
 end)

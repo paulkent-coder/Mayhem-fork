@@ -672,3 +672,35 @@ SMODS.Joker {
 		end
 	end
 }
+
+SMODS.Joker {
+	key = 'gemstone',
+	loc_txt = {
+    name = 'Gemstone',
+    text = {
+			"{C:attention}Glass Cards{} give {X:chips,C:white}X#1#{} Chips",
+			"when scored"
+		}
+	},
+	config = { extra = { Xchips = 1.35 } },
+	rarity = 2,
+	atlas = 'joker1',
+	blueprint_compat = true,
+	demicoloncompat = false,
+	pos = { x = 4, y = 0 },
+	cost = 5,
+	loc_vars = function(self, info_queue, card)
+		return { vars = { card.ability.extra.Xchips } }
+	end,
+	calculate = function(self, card, context)
+		if context.individual and context.cardarea == G.play then
+			if SMODS.has_enhancement(context.other_card, 'm_glass') then
+				return {
+					xchips = card.ability.extra.Xchips,
+					colour = G.C.CHIPS,
+					message_card = context.other_card,
+				}
+			end
+		end
+	end
+}

@@ -1382,6 +1382,11 @@ SMODS.Consumable {
 				play_sound('card1', percent)
 			return true end})) 
 		end
+	end, 
+	draw = function(self, card, layer)
+		if (layer == 'card' or layer == 'both') and card.sprite_facing == 'front' then
+			card.children.center:draw_shader('voucher', nil, card.ARGS.send_to_shader)
+		end
 	end
 }
 
@@ -1845,7 +1850,7 @@ SMODS.Consumable {
 	end
 }
 
-SMODS.Consumable {
+--[[SMODS.Consumable {
 	key = 'titanium_card',
 	config = { extra = { bonus1 = 2.5, bonus2 = 0.8, target = 'm_may_titanium' } },
 	loc_txt = {
@@ -1954,7 +1959,7 @@ SMODS.Consumable {
 	in_pool = function(self, args)
 		return G.GAME.may_endless_mode, { allow_duplicates = false }
 	end
-}
+}]] 
 
 SMODS.Consumable {
 	key = 'scorched_card',
@@ -2789,7 +2794,7 @@ SMODS.Consumable {
 			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..card.ability.extra.bonus1 * amount}, colour = G.C.MULT, delay = 0.45})
 			for k2, v2 in pairs(G.playing_cards) do
 				if not table_hasvalue(targets, v2) then 
-					v2.ability.perma_mult = (v2.ability.perma_mult or 0) + card.ability.extra.bonus1 * amount
+					v2.ability.perma_mult = (v2.ability.perma_mult or 0) + (card.ability.extra.bonus1 * amount) 
 					if v2.area ~= G.deck and v2.area ~= G.discard then
 						G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
 							v2:juice_up(0.3, 0.5)
@@ -2801,7 +2806,7 @@ SMODS.Consumable {
 			card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+'..card.ability.extra.bonus2 * amount}, colour = G.C.CHIPS, delay = 0.45})
 			for k2, v2 in pairs(G.playing_cards) do
 				if not table_hasvalue(targets, v2) then 
-					v2.ability.perma_bonus = (v2.ability.perma_bonus or 0) + card.ability.extra.bonus2 * amount
+					v2.ability.perma_bonus = (v2.ability.perma_bonus or 0) + (card.ability.extra.bonus2 * amount)
 					if v2.area ~= G.deck and v2.area ~= G.discard then
 						G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
 							v2:juice_up(0.3, 0.5)
@@ -4968,22 +4973,18 @@ SMODS.Consumable {
 		for k, v in pairs(targets) do 
 			local choice = pseudorandom(pseudoseed('may_present'), 1, 5)
 			if choice == 1 then 
-				card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+1 Tarot'}, colour = G.C.SECONDARY_SET.Tarot, delay = 0.45})
-				G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
-					card:juice_up(0.3, 0.5)
-					SMODS.add_card({ set = 'Tarot' })
-					play_sound('timpani')
-				return true end})) 
+				for k, v in pairs(G.hand.cards) do
+					v.ability.perma_mult = (v.ability.perma_mult or 0) + 5
+					card_eval_status_text(v, 'extra', nil, nil, nil, { message = {'Upgraded!'}, colour = G.C.MULT, delay = 0.45, sound = 'may_permabonus' })
+				end
 			elseif choice == 2 then 
-				card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+1 Planet'}, colour = G.C.SECONDARY_SET.Planet, delay = 0.45})
-				G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
-					card:juice_up(0.3, 0.5)
-					SMODS.add_card({ set = 'Planet' })
-					play_sound('timpani')
-				return true end})) 
+				for k, v in pairs(G.hand.cards) do
+					v.ability.perma_chips = (v.ability.perma_chips or 0) + 7
+					card_eval_status_text(v, 'extra', nil, nil, nil, { message = {'Upgraded!'}, colour = G.C.CHIPS, delay = 0.45, sound = 'may_permabonus' })
+				end
 			elseif choice == 3 then 
 				card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+0.1 Interest'}, colour = G.C.MONEY, delay = 0.45})
-				may.ease_interest(-1, 0.5)
+				may.ease_interest(-1, 0.25)
 				G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
 					card:juice_up(0.3, 0.5)
 				return true end}))
@@ -4995,11 +4996,7 @@ SMODS.Consumable {
 					card:juice_up(0.3, 0.5)
 				return true end}))
 			else
-				card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+1 Consumable Slot'}, colour = G.C.FILTER, delay = 0.45})
-				G.consumeables:change_size(1)
-				G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
-					card:juice_up(0.3, 0.5)
-				return true end}))
+				may.level_up_all_hands(card, nil, false, 0.5)
 			end
 		end
 		for k, v in pairs(targets) do 
@@ -5028,22 +5025,18 @@ SMODS.Consumable {
 			for i = 1, number do
 				local choice = pseudorandom(pseudoseed('may_present'), 1, 5)
 				if choice == 1 then 
-					card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+1 Tarot'}, colour = G.C.SECONDARY_SET.Tarot, delay = 0.45})
-					G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
-						card:juice_up(0.3, 0.5)
-						SMODS.add_card({ set = 'Tarot' })
-						play_sound('timpani')
-					return true end})) 
+					for k, v in pairs(G.hand.cards) do
+						v.ability.perma_mult = (v.ability.perma_mult or 0) + 5
+						card_eval_status_text(v, 'extra', nil, nil, nil, { message = {'Upgraded!'}, colour = G.C.MULT, delay = 0.45, sound = 'may_permabonus' })
+					end
 				elseif choice == 2 then 
-					card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+1 Planet'}, colour = G.C.SECONDARY_SET.Planet, delay = 0.45})
-					G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
-						card:juice_up(0.3, 0.5)
-						SMODS.add_card({ set = 'Planet' })
-						play_sound('timpani')
-					return true end})) 
+					for k, v in pairs(G.hand.cards) do
+						v.ability.perma_chips = (v.ability.perma_chips or 0) + 7
+						card_eval_status_text(v, 'extra', nil, nil, nil, { message = {'Upgraded!'}, colour = G.C.CHIPS, delay = 0.45, sound = 'may_permabonus' })
+					end
 				elseif choice == 3 then 
 					card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+0.1 Interest'}, colour = G.C.MONEY, delay = 0.45})
-					may.ease_interest(-1, 0.5)
+					may.ease_interest(-1, 0.25)
 					G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
 						card:juice_up(0.3, 0.5)
 					return true end}))
@@ -5055,11 +5048,7 @@ SMODS.Consumable {
 						card:juice_up(0.3, 0.5)
 					return true end}))
 				else
-					card_eval_status_text(card, 'extra', nil, nil, nil, { message = {'+1 Consumable Slot'}, colour = G.C.FILTER, delay = 0.45})
-					G.consumeables:change_size(1)
-					G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
-						card:juice_up(0.3, 0.5)
-					return true end}))
+					may.level_up_all_hands(card, nil, false, 0.5)
 				end
 			end
 		end

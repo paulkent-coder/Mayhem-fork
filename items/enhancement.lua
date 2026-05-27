@@ -135,10 +135,10 @@ SMODS.Enhancement {
 		name = 'Overgrown Card',
 		text = {
 			{
-				"Apply a",
-				"{C:attention}random{} {C:dark_edition}Edition{} to this card",
+				"Apply a {C:attention}random{} {C:dark_edition}Edition{}", 
+				"to this card", 
 				"when it is {C:attention}discarded{}",
-				"then {C:mult}remove this enhancement{}",
+				"then {C:mult}remove{} this {C:dark_edition}Enhancement{}",
 			},
 			{
 				"{C:inactive,E:1}Idea by _TeKKen_{}", 
@@ -168,7 +168,7 @@ SMODS.Enhancement {
 	loc_txt = {
 		name = 'Platinum Card',
 		text = {
-			"{C:money}+0.1{} Interest at the", 
+			"{X:money,C:white}X1.1${} at the", 
             "end of round",
             "if {C:attention}held in hand{}",
 		}
@@ -179,12 +179,12 @@ SMODS.Enhancement {
 	weight = 0,
 	discovered = true,
 	atlas = 'enhancement',
-	loc_vars = function(self, info_queue, card)
-		info_queue[#info_queue + 1] = { key = "may_interest_tutorial", set = "Other" }
-	end,
 	calculate = function(self, card, context)
 		if context.playing_card_end_of_round and context.cardarea == G.hand then
-			may.ease_interest(-1, 0.1)
+			return {
+				x_dollars = 1.1, 
+                card = card 
+			}
 		end
 	end,
     in_pool = function(self, args)
@@ -230,9 +230,14 @@ SMODS.Enhancement {
             {
 			    'If {C:attention}held in hand{} at the end of round,',
 				'gives {C:attention}adjacent{} cards', 
-				'held in hand {C:money}+$2{}', 
+				'held in hand {C:money}+$(Round ^ 1.1){}', 
 				'{C:attention}Adjacent{} {C:dark_edition}Crystal Cards{} get', 
 				'{C:green}double{} the bonus', 
+				may.pager(), 
+				'{C:attention}Suitless{}, {C:attention}Rankless{}, {C:green}always{} scores,', 
+				'but does {C:mult}nothing{} by default', 
+				may.pager(), 
+				'{C:inactive}Currently +$#1#, rounds down{}'
             },
             {
                 '{C:inactive,E:1}Art by HuyCorn{}'
@@ -246,6 +251,13 @@ SMODS.Enhancement {
 	discovered = true,
     shatters = true,
 	atlas = 'enhancement',
+	replace_base_card = true, 
+	no_rank = true, 
+	no_suit = true,
+	always_scores = true,
+	loc_vars = function(self, info_queue, card)
+		return { vars = { math.floor((G.GAME.round or 0) ^ 1.1 ) } }
+	end,
 	calculate = function(self, card, context)
 		if context.playing_card_end_of_round and context.cardarea == G.hand then
 			local left, right
@@ -257,13 +269,18 @@ SMODS.Enhancement {
 				end
 			end
 			if left then
-				left.ability.perma_p_dollars = (left.ability.perma_p_dollars or 0) + 2 * (SMODS.has_enhancement(left, 'm_may_crystal') and 2 or 1)
+				left.ability.perma_p_dollars = (left.ability.perma_p_dollars or 0) + math.floor((G.GAME.round or 0) ^ 1.1 ) * (SMODS.has_enhancement(left, 'm_may_crystal') and 2 or 1)
 				card_eval_status_text(left, 'extra', nil, nil, nil, { message = 'Upgraded!', colour = G.C.MONEY, delay = 0.45, sound = 'may_permabonus' })
 			end
 			if right then
-				right.ability.perma_p_dollars = (right.ability.perma_p_dollars or 0) + 2 * (SMODS.has_enhancement(right, 'm_may_crystal') and 2 or 1)
+				right.ability.perma_p_dollars = (right.ability.perma_p_dollars or 0) + math.floor((G.GAME.round or 0) ^ 1.1 ) * (SMODS.has_enhancement(right, 'm_may_crystal') and 2 or 1)
 				card_eval_status_text(right, 'extra', nil, nil, nil, { message = 'Upgraded!', colour = G.C.MONEY, delay = 0.45, sound = 'may_permabonus' })
 			end
+		end
+	end, 
+	draw = function(self, card, layer)
+		if (layer == 'card' or layer == 'both') and card.sprite_facing == 'front' then
+			card.children.center:draw_shader('voucher', nil, card.ARGS.send_to_shader)
 		end
 	end
 }
@@ -352,7 +369,7 @@ SMODS.Enhancement {
 	end
 }
 
-SMODS.Enhancement {
+--[[SMODS.Enhancement {
 	key = 'titanium',
 	loc_txt = {
 		name = 'Titanium Card',
@@ -392,7 +409,7 @@ SMODS.Enhancement {
     in_pool = function(self, args)
         return G.GAME.may_endless_mode, { allow_duplicates = true }
     end
-}
+}]] 
 
 SMODS.Enhancement {
 	key = 'geometric',
