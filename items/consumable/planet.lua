@@ -521,12 +521,12 @@ SMODS.Consumable {
 		may.th(may.favhand())
 		level_up_hand(card, may.favhand(), false, card.ability.extra.levels)
 		for i=1, card.ability.extra.cards, 1 do
+			local new = create_playing_card(nil, G.play, nil, i ~= 1, {G.C.SECONDARY_SET.Planet})
 			G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.1, func = function()
-				local new = create_playing_card(nil, G.play, nil, i ~= 1, {G.C.SECONDARY_SET.Planet})
 				new:juice_up()
 				play_sound('card1')
-				table.insert(created, new)
 			return true end}))
+			table.insert(created, new)
 		end
 		G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.15, func = function()
 			for k, v in pairs(created) do
@@ -548,12 +548,12 @@ SMODS.Consumable {
 		may.th(may.favhand())
 		level_up_hand(card, may.favhand(), false, card.ability.extra.levels*number)
 		for i=1, card.ability.extra.cards*number, 1 do
+			local new = create_playing_card(nil, G.play, nil, i ~= 1, {G.C.SECONDARY_SET.Planet})
 			G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.1, func = function()
-				local new = create_playing_card(nil, G.play, nil, i ~= 1, {G.C.SECONDARY_SET.Planet})
 				new:juice_up()
 				play_sound('card1')
-				table.insert(created, new)
 			return true end}))
+			table.insert(created, new)
 		end
 		G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.15, func = function()
 			for k, v in pairs(created) do
