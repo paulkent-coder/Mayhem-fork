@@ -222,6 +222,22 @@ SMODS.Joker:take_ownership('j_stone', {
     end
 })
 
+SMODS.Joker:take_ownership('j_mr_bones', {
+    loc_txt = {
+        name = "Mr. Bones", 
+        text = {
+            {
+                "Prevents Death", 
+                "if chips scored", 
+                "are at least {C:attention}25%{}", 
+                "of required chips",
+                "{E:2,C:red}self destructs{}"
+   		 }, 
+    		may.add_fusion_text('Universal Collapse', 'The Fates', 'Only {C:attention}one hand{} remaining')
+        }, 
+    }
+})
+
 SMODS.Joker:take_ownership('j_satellite', {
 	rarity = 3
 })

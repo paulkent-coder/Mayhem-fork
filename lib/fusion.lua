@@ -512,6 +512,10 @@ may.fusions:add_fusion('j_may_universal_collapse', nil, nil, 'j_may_paper_shredd
 	return #G.playing_cards <= 40
 end)
 
+may.fusions:add_fusion('j_may_universal_collapse', nil, nil, 'j_mr_bones', nil, nil, 'j_may_thefates', 1000, 'may_transcendent_joker', nil, 0, function()
+	return G.GAME.current_round.hands_left < 2
+end)
+
 	-- Prismatic 
  
 may.fusions:add_fusion('j_may_universal_collapse', nil, nil, 'j_may_acum', nil, nil, 'j_may_acum_universum', 11111, 'may_interdimensional_joker', nil, 0.8, function()

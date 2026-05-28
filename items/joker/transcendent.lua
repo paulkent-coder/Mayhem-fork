@@ -583,3 +583,61 @@ SMODS.Joker {
 		end
 	end
 }
+
+SMODS.Joker {
+	key = 'thefates',
+	loc_txt = {
+		name = {'The Fates', "{C:inactive,s:0.5}Universal Collapse + Mr. Bones{}"},
+		text = {
+			{
+            	"Prevents Death against {C:attention}non-Boss Blinds{}",
+				"Gains {X:mult,C:white}+^#2#{} Mult when Death is prevented",
+				"{C:inactive}(Currently {X:mult,C:white}^#1#{} {C:inactive}Mult){}"
+			}
+		}
+	},
+	config = { extra = { Emult = 1, Emult_gain = 2 } },
+	pos = { x = 4, y = 1 },
+	cost = 1000,
+	rarity = 'may_transcendent',
+	atlas = 'placeholder',
+	blueprint_compat = true,
+	demicoloncompat = true,
+	no_tree = true,
+    loc_vars = function(self, info_queue, card)
+        return {vars = {card.ability.extra.Emult, card.ability.extra.Emult_gain}}
+    end,
+    calculate = function(self, card, context)
+		if context.game_over and not G.GAME.blind.boss then
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "Emult",
+				scalar_value = "Emult_gain",
+                colour = G.C.MULT
+			})
+			return { saved = "Saved by The Fates" }
+		end
+		if context.joker_main then
+			return {
+				Emult_mod = card.ability.extra.Emult,
+				card = card,
+				message = '^'..number_format(card.ability.extra.Emult)..' Mult',
+				colour = G.C.MULT,
+			}
+		end
+		if context.forcetrigger then
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "Emult",
+				scalar_value = "Emult_gain",
+                colour = G.C.MULT
+			})
+			return {
+				Emult_mod = card.ability.extra.Emult,
+				card = card,
+				message = '^'..number_format(card.ability.extra.Emult)..' Mult',
+				colour = G.C.MULT,
+			}
+		end
+	end
+}
