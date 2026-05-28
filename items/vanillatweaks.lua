@@ -266,7 +266,7 @@ SMODS.Consumable:take_ownership('c_high_priestess', {
 		return { vars = { card.ability.extra.max_highlighted } }
     end, 
     can_use = function(self, card)
-        return may.canuse() and #G.hand.highlighted <= (card.ability.max_highlighted + (card.area == G.hand and 1 or 0)) and #G.hand.highlighted > (card.area == G.hand and 1 or 0)
+        return may.canuse() and #G.hand.highlighted <= (card.ability.extra.max_highlighted + (card.area == G.hand and 1 or 0)) and #G.hand.highlighted > (card.area == G.hand and 1 or 0)
     end, 
     use = function(self, card, copier)
 		local pool = {}
@@ -292,7 +292,7 @@ SMODS.Consumable:take_ownership('c_high_priestess', {
 		end
 		delay(0.2)
 		for i=1, #targets do
-			local percent = 0.85 + (i-0.999)/(targets-0.998)*0.3
+			local percent = 0.85 + (i-0.999)/(#targets-0.998)*0.3
 			G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() targets[i]:flip();targets[i]:set_ability(may.random_consumable('may_hp', nil, 'c_high_priestess', pool, true), true, nil);play_sound('tarot2', percent);targets[i]:juice_up(0.3, 0.3);targets[i].highlighted = false;return true end }))
 		end
         G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() 
