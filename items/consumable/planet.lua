@@ -539,7 +539,6 @@ SMODS.Consumable {
 					return true end}))
 				end
 			end
-			playing_card_joker_effects(created)
 		return true end}))
 		may.ch()
 		SMODS.calculate_context({ playing_card_added = true, cards = created })
@@ -567,7 +566,6 @@ SMODS.Consumable {
 					return true end}))
 				end
 			end
-			playing_card_joker_effects(created)
 		return true end}))
 		may.ch()
 		SMODS.calculate_context({ playing_card_added = true, cards = created })
