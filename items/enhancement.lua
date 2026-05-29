@@ -230,14 +230,13 @@ SMODS.Enhancement {
             {
 			    'If {C:attention}held in hand{} at the end of round,',
 				'gives {C:attention}adjacent{} cards', 
-				'held in hand {C:money}+$(Round ^ 1.1){}', 
+				'held in hand {C:money}+$2{}', 
 				'{C:attention}Adjacent{} {C:dark_edition}Crystal Cards{} get', 
 				'{C:green}double{} the bonus', 
 				may.pager(), 
 				'{C:attention}Suitless{}, {C:attention}Rankless{}, {C:green}always{} scores,', 
 				'but does {C:mult}nothing{} by default', 
 				may.pager(), 
-				'{C:inactive}Currently +$#1#, rounds down{}'
             },
             {
                 '{C:inactive,E:1}Art by HuyCorn{}'
@@ -269,11 +268,11 @@ SMODS.Enhancement {
 				end
 			end
 			if left then
-				left.ability.perma_p_dollars = (left.ability.perma_p_dollars or 0) + math.floor((G.GAME.round or 0) ^ 1.1 ) * (SMODS.has_enhancement(left, 'm_may_crystal') and 2 or 1)
+				left.ability.perma_p_dollars = (left.ability.perma_p_dollars or 0) + 2 * (SMODS.has_enhancement(left, 'm_may_crystal') and 2 or 1)
 				card_eval_status_text(left, 'extra', nil, nil, nil, { message = 'Upgraded!', colour = G.C.MONEY, delay = 0.45, sound = 'may_permabonus' })
 			end
 			if right then
-				right.ability.perma_p_dollars = (right.ability.perma_p_dollars or 0) + math.floor((G.GAME.round or 0) ^ 1.1 ) * (SMODS.has_enhancement(right, 'm_may_crystal') and 2 or 1)
+				right.ability.perma_p_dollars = (right.ability.perma_p_dollars or 0) + 2 * (SMODS.has_enhancement(right, 'm_may_crystal') and 2 or 1)
 				card_eval_status_text(right, 'extra', nil, nil, nil, { message = 'Upgraded!', colour = G.C.MONEY, delay = 0.45, sound = 'may_permabonus' })
 			end
 		end
