@@ -864,22 +864,21 @@ SMODS.Voucher {
 		name = "Upside Down Merchant",
 		text = {
 			"{C:dark_edition}Upside Down{} Consumables", 
-			"will appear {X:attention,C:white}#1#%{} more {C:green}frequently{}",
+			"will appear {X:attention,C:white}35%{} more {C:green}frequently{}",
 			may.pager(), 
-			"{C:inactive}#2# in #3# >> #2# in #4#{}"
+			"{C:inactive}#1# in #2# >> #1# in #3#{}"
 		}
 	},
 	pos = { x = 2, y = 4 },
 	atlas = 'voucher',
-	config = { extra = { per = 35 } },
 	cost = 10,
 	unlocked = true,
 	loc_vars = function(self, info_queue, card)
-		return { vars = { card.ability.extra.per, G.GAME.probabilities.normal, (G.GAME.may_upsd_rate or 80), (G.GAME.may_upsd_rate or 80) - ((G.GAME.may_upsd_rate or 80) * card.ability.extra.per * 0.01) } }
+		return { vars = { G.GAME.probabilities.normal, (G.GAME.may_upsd_rate or 80), (G.GAME.may_upsd_rate or 80) - ((G.GAME.may_upsd_rate or 80) * 0.35) } }
 	end,
 	redeem = function(self)
-		G.GAME.may_upsd_rate = (G.GAME.may_upsd_rate or 80) - ((G.GAME.may_upsd_rate or 80) * card.ability.extra.per * 0.01)
-	end
+		G.GAME.may_upsd_rate = (G.GAME.may_upsd_rate or 80) - ((G.GAME.may_upsd_rate or 80) * 0.35)
+	end 
 }
 
 SMODS.Voucher {
@@ -888,21 +887,20 @@ SMODS.Voucher {
 		name = "Upside Down Tycoon",
 		text = {
 			"{C:dark_edition}Upside Down{} Consumables", 
-			"will appear {X:attention,C:white}#1#%{} more {C:green}frequently{}", 
+			"will appear {X:attention,C:white}50%{} more {C:green}frequently{}", 
 			may.pager(55), 
-			"{C:inactive}#2# in #3# >> #2# in #4#{}"
+			"{C:inactive}#1# in #2# >> #1# in #3#{}"
 		}
 	},
 	pos = { x = 3, y = 4 },
 	atlas = 'voucher',
-	config = { extra = { per = 50 } },
 	cost = 10,
 	unlocked = true,
 	requires = { 'v_may_upside_down_merchant' }, 
 	loc_vars = function(self, info_queue, card)
-		return { vars = { card.ability.extra.per, G.GAME.probabilities.normal, (G.GAME.may_upsd_rate or 80), (G.GAME.may_upsd_rate or 80) - ((G.GAME.may_upsd_rate or 80) * card.ability.extra.per * 0.01) } }
+		return { vars = { G.GAME.probabilities.normal, (G.GAME.may_upsd_rate or 80), (G.GAME.may_upsd_rate or 80) - ((G.GAME.may_upsd_rate or 80) * 0.5) } }
 	end,
 	redeem = function(self)
-		G.GAME.may_upsd_rate = (G.GAME.may_upsd_rate or 80) - ((G.GAME.may_upsd_rate or 80) * card.ability.extra.per * 0.01)
+		G.GAME.may_upsd_rate = (G.GAME.may_upsd_rate or 80) - ((G.GAME.may_upsd_rate or 80) * 0.5)
 	end 
 }
