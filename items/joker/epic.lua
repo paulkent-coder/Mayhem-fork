@@ -64,8 +64,8 @@ SMODS.Joker {
             end
 		end
         if context.before and context.cardarea == G.jokers then 
-            if scoring_hand then 
-                for k, v in pairs(scoring_hand) do
+			if context.scoring_hand then 
+                for k, v in pairs(context.scoring_hand) do
                     G.E_MANAGER:add_event(Event({trigger = "after", delay = 0.2, func = function()
                         G.GAME.blind.chips = G.GAME.blind.chips * card.ability.extra.x_blind_size
                         G.GAME.blind.chip_text = number_format(G.GAME.blind.chips)
