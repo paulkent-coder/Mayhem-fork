@@ -630,7 +630,8 @@ SMODS.Edition {
     end, 
 	calculate = function(self, card, context)
 		if context.before and (context.cardarea == G.play or context.cardarea == G.jokers) then
-			level_up_hand(card, G.GAME.current_round.current_hand.handname, nil, 1)
+			local text,_,_,_,_ = G.FUNCS.get_poker_hand_info(G.play.cards)
+			level_up_hand(card, text, nil, 1)
 		end
 	end,
 	in_shop = true,
