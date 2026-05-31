@@ -139,11 +139,8 @@ SMODS.Joker {
 		text = {
 			{
 				"When a {C:attention}Queen{} of {C:hearts}Hearts{} is {C:attention}discarded{},",
-				"create {C:attention}#3#{} {C:dark_edition}Negative{} copies of",
+				"create a {C:dark_edition}Negative{} copy of",
 				"the {C:attention}last consumable{} used this run",
-				may.pager(), 
-				"{C:green}#1# in #2#{} chance to {C:attention}increase{} number",
-				"of copies by {C:attention}#4#{} afterwards",
 				may.pager(), 
 				"{C:inactive}Hidden Consumables excluded{}", 
 				may.pager(), 
@@ -201,7 +198,6 @@ SMODS.Joker {
 				if (not G.P_CENTERS[G.GAME.last_consumable].hidden) and (not (G.P_CENTERS[G.GAME.last_consumable].set == 'ascendedtarots' or G.P_CENTERS[G.GAME.last_consumable].set == 'ascendedplanets' or G.P_CENTERS[G.GAME.last_consumable].set == 'ascendedspectrals' or G.P_CENTERS[G.GAME.last_consumable].set == 'yottacards')) and (not ((G.P_CENTERS[G.GAME.last_consumable].planet_rarity or 1) >= 2)) then
 					G.E_MANAGER:add_event(Event({delay = 0.1, func = function()
 						local new = create_card(G.P_CENTERS[G.GAME.last_consumable].set, G.consumeables, nil, nil, nil, nil, G.GAME.last_consumable, nil)
-						new:setQty(card.ability.extra.copies)
 						new.no_forced_edition = true
 						new:set_edition('e_negative', true)
 						new.no_forced_edition = nil
@@ -213,20 +209,6 @@ SMODS.Joker {
 					return true end}))
 				end
 			end
-			if not context.blueprint and SMODS.pseudorandom_probability(card, "may_doggo", 1, card.ability.extra.odds, "DOGGO") then
-				SMODS.scale_card(card, {
-					ref_table = card.ability.extra,
-					ref_value = "copies",
-					scalar_value = "copies_scale",
-				})
-			end
-		end
-		if context.forcetrigger then
-			SMODS.scale_card(card, {
-				ref_table = card.ability.extra,
-				ref_value = "copies",
-				scalar_value = "copies_scale",
-			})
 		end
 	end
 }
