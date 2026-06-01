@@ -150,6 +150,13 @@ SMODS.Atlas {
 }
 
 SMODS.Atlas {
+	key = "planet_personal",
+	path = "planet_personal.png",
+	px = 71,
+	py = 95
+}
+
+SMODS.Atlas {
 	key = "rareplanet",
 	path = "rareplanet.png",
 	px = 71,

@@ -1164,7 +1164,7 @@ SMODS.Consumable {
 	key = 'mangas',
 	config = { extra = { limit = 20 } },
 	pos = { x = 1, y = 0 },
-	atlas = 'planet',
+	atlas = 'planet_personal',
 	loc_txt = {
 		name = 'Mangas',
 		text = {
