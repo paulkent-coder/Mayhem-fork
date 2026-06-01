@@ -103,7 +103,7 @@ SMODS.Joker {
 	immutable = true,
 	pos = { x = 1, y = 13 },
 	soul_pos = { x = 2, y = 13 },
-	pools = { Food = true },
+	--pools = { Food = true },
 	cost = 20,
 	loc_vars = function(self, info_queue, card)
 		local amount = 0

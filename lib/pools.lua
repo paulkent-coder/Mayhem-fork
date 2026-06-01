@@ -35,7 +35,9 @@ function may.is_pool_center(center, pool)
 		center.key == 'j_diet_cola' or
 		center.key == 'j_popcorn' or
 		center.key == 'j_ramen' or
-		center.key == 'j_selzer' then
+		center.key == 'j_selzer' or
+		center.key == 'j_may_anniversary_cake' or
+		center.key == 'j_may_mr_nacho' then
 			return true 
 		end
 	elseif pool == 'HandSpecific' then
