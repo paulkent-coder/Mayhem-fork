@@ -437,7 +437,7 @@ SMODS.Joker {
 	atlas = 'joker2',
 	blueprint_compat = false,
 	demicoloncompat = false,
-	pools = { Food = true },
+	--pools = { Food = true },
     loc_vars = function(self, info_queue, card)
 		local rarities = {'Common', 'Uncommon', 'Rare', 'Epic', 'Legendary'}
 		local colors = {'Common', 'Uncommon', 'Rare', may.epic_key, 'Legendary'}
