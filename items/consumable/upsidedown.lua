@@ -1720,7 +1720,7 @@ SMODS.Consumable {
 		text = {
 			{
 				"{C:mult}Destroys{} all {C:attention}Aces{} in {C:attention}full deck{}",
-				"{C:attention}-1 Ante{}",
+				"{C:attention}+1 Card Selection Limit{}",
 			},
 			{
 				"{C:inactive,E:1}Art by _TeKKen_{}"
@@ -1745,7 +1745,7 @@ SMODS.Consumable {
 				    table.insert(targets, card)
 			    end
 		    end
-		    ease_ante(-1)
+		    G.hand:change_max_highlight(1)
 		    SMODS.calculate_context({ remove_playing_cards = true, removed = targets })
             play_sound('may_event')
         return true end}))
